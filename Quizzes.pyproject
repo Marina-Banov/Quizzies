@@ -1,3 +1,9 @@
 {
-    "files": ["main.py", "view.qml", "logo.png"]
+    "files": [
+        "src/res.qrc",
+        "src/main.py",
+        "src/homePage.py",
+        "src/database.py",
+        "src/qml/homePage.qml"
+    ]
 }

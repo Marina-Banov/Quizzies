@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>assets/bg.svg</file>
+        <file>assets/bg.png</file>
+        <file>assets/PatuaOne-Regular.ttf</file>
+        <file>assets/favicon.png</file>
+        <file>assets/Lato-Regular.ttf</file>
+    </qresource>
+</RCC>
