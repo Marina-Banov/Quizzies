@@ -1,6 +1,7 @@
 .idea/
 env/
 db.sqlite3
+qrc.py
 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------

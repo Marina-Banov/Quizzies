@@ -1,27 +1,18 @@
 import sys
-# import urllib.request
-# import json
 from pathlib import Path
 
 from PySide6.QtQuick import QQuickView
-from PySide6.QtCore import QStringListModel, QUrl
+from PySide6.QtCore import QUrl
 from PySide6.QtGui import QGuiApplication, QIcon
 
 import qrc  # static resources
-import database
+from database import Database
+from models import Controller, Quiz, QObjectWrapper, QuizListModel
 
 
 def main():
-    database.connect()
-    database.create_tables()
-    # Get our data
-    # url = "http://country.io/names.json"
-    # response = urllib.request.urlopen(url)
-    # data = json.loads(response.read().decode('utf-8'))
-
-    # Format and sort the data
-    # data_list = list(data.values())
-    # data_list.sort()
+    db = Database()
+    quizzes = [Quiz(q) for q in db.get_quizzes()]
 
     # Set up the application window
     app = QGuiApplication(sys.argv)
@@ -31,9 +22,12 @@ def main():
     window.setResizeMode(QQuickView.SizeRootObjectToView)
 
     # Expose the list to the Qml code
-    # my_model = QStringListModel()
-    # my_model.setStringList(data_list)
-    # view.setInitialProperties({"myModel": my_model})
+    quizzes = [QObjectWrapper(q) for q in quizzes]
+    controller = Controller()
+    quizzes_model = QuizListModel(quizzes)
+    rc = window.rootContext()
+    rc.setContextProperty("controller", controller)
+    rc.setContextProperty("quizzesModel", quizzes_model)
 
     # Load the QML file
     qml_file = Path(__file__).parent / "qml/main.qml"
@@ -49,5 +43,5 @@ def main():
     del window
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
