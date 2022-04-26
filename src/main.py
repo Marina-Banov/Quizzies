@@ -8,9 +8,12 @@ from PySide6.QtCore import QStringListModel, QUrl
 from PySide6.QtGui import QGuiApplication, QIcon
 
 import qrc  # static resources
+import database
 
 
 def main():
+    database.connect()
+    database.create_tables()
     # Get our data
     # url = "http://country.io/names.json"
     # response = urllib.request.urlopen(url)
@@ -33,7 +36,7 @@ def main():
     # view.setInitialProperties({"myModel": my_model})
 
     # Load the QML file
-    qml_file = Path(__file__).parent / "qml/homePage.qml"
+    qml_file = Path(__file__).parent / "qml/main.qml"
     window.setSource(QUrl.fromLocalFile(qml_file.resolve()))
 
     # Show the window

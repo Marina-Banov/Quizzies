@@ -4,6 +4,8 @@
         "src/main.py",
         "src/homePage.py",
         "src/database.py",
-        "src/qml/homePage.qml"
+        "src/qml/main.qml",
+        "src/qml/homePage.qml",
+        "src/qml/editPage.qml"
     ]
 }

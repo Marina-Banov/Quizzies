@@ -25,31 +25,65 @@ def connect():
         QFile.remove(filename)
 
 
-def create_table():
-    if "Conversations" in QSqlDatabase.database().tables():
+def create_tables():
+    table_names = [
+        "quiz",
+        "category",
+        "question",
+        "category_question",
+        "choice",
+    ]
+
+    if all(table in QSqlDatabase.database().tables() for table in table_names):
         return
 
     query = QSqlQuery()
-    if not query.exec_(
-        """
-        CREATE TABLE IF NOT EXISTS 'Conversations' (
-            'author' TEXT NOT NULL,
-            'recipient' TEXT NOT NULL,
-            'timestamp' TEXT NOT NULL,
-            'message' TEXT NOT NULL,
-        FOREIGN KEY('author') REFERENCES Contacts ( name ),
-        FOREIGN KEY('recipient') REFERENCES Contacts ( name )
-        )
-        """
-    ):
-        print("Failed to query database")
 
-    # This adds the first message from the Bot
-    # and further development is required to make it interactive.
-    query.exec_(
-        """
-        INSERT INTO Conversations VALUES(
-            'machine', 'Me', '2019-01-07T14:36:06', 'Hello!'
-        )
-        """
-    )
+    # from the docs (https://doc.qt.io/qt-6/qsqlquery.html#exec):
+    # For SQLite, the query string can contain only one statement at a time.
+    query.exec_("""
+        CREATE TABLE IF NOT EXISTS quiz (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL
+        );
+    """)
+
+    query.exec_("""
+        CREATE TABLE IF NOT EXISTS category (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            quiz_id INTEGER NOT NULL,
+            FOREIGN KEY (quiz_id) REFERENCES quiz (id)
+        );
+    """)
+
+    query.exec_("""
+        CREATE TABLE IF NOT EXISTS question (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            question TEXT NOT NULL,
+            answer TEXT NOT NULL,
+            type INTEGER NOT NULL,
+            'order' TEXT NOT NULL,
+            points INTEGER NOT NULL,
+            image BLOB
+        );
+    """)
+
+    query.exec_("""
+        CREATE TABLE IF NOT EXISTS category_question (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            category_id INTEGER NOT NULL,
+            question_id INTEGER NOT NULL,
+            FOREIGN KEY (category_id) REFERENCES category (id),
+            FOREIGN KEY (question_id) REFERENCES question (id)
+        );
+    """)
+
+    query.exec_("""       
+        CREATE TABLE IF NOT EXISTS choice (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            choice TEXT NOT NULL,
+            question_id INTEGER NOT NULL,
+            FOREIGN KEY (question_id) REFERENCES question (id)
+        );
+    """)
