@@ -1,5 +1,6 @@
 from PySide6.QtCore import QDir, QFile
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
+from dataclasses import dataclass
 
 
 class Database:
@@ -13,10 +14,9 @@ class Database:
         self.query.exec_(f"SELECT * FROM quiz")
         result = []
         while self.query.next():
-            result.append({
-                "id": self.query.value("id"),
-                "name": self.query.value("name"),
-            })
+            result.append(
+                Quiz(self.query.value("id"), self.query.value("name"))
+            )
             # https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.fetchall
             # result.append(tuple(query.value(f) for f in fields))
         return result
@@ -102,3 +102,13 @@ class Database:
                 FOREIGN KEY (question_id) REFERENCES question (id)
             );
         """)
+
+
+@dataclass
+class Quiz:
+    _id: int  # private by convention
+    name: str
+
+    @property
+    def id(self):  # read-only
+        return self._id

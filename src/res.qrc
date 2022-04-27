@@ -2,6 +2,9 @@
     <qresource prefix="/">
         <file>assets/bg.png</file>
         <file>assets/favicon.png</file>
+        <file>assets/icon_play.svg</file>
+        <file>assets/icon_edit.svg</file>
+        <file>assets/icon_delete.svg</file>
         <file>assets/PatuaOne-Regular.ttf</file>
         <file>assets/Lato-Regular.ttf</file>
     </qresource>

@@ -2,15 +2,6 @@ from PySide6.QtCore import QAbstractListModel, QModelIndex, \
     QObject, Qt, Property, Signal, Slot
 
 
-class Quiz:
-    def __init__(self, quiz_dict):
-        self.id = quiz_dict["id"]
-        self.name = quiz_dict["name"]
-
-    def __str__(self):
-        return self.name
-
-
 class QObjectWrapper(QObject):
     def __init__(self, obj):
         QObject.__init__(self)
@@ -45,8 +36,18 @@ class QuizListModel(QAbstractListModel):
         self._quizzes.append(q)
         self.endInsertRows()
 
-
-class Controller(QObject):
     @Slot(QObject)
     def print(self, obj):
         print("User clicked on:", obj.obj)
+
+    @Slot(QObject)
+    def play(self, obj):
+        print("Play:", obj.obj)
+
+    @Slot(QObject)
+    def edit(self, obj):
+        print("Edit:", obj.obj)
+
+    @Slot(QObject)
+    def delete(self, obj):
+        print("Delete:", obj.obj)
