@@ -15,6 +15,11 @@ Item {
         source: "qrc:///assets/Lato-Regular.ttf"
     }
 
+    QtObject{
+        id: internals
+        property int currentIndex: -1
+    }
+
     StackView {
        id: stack
        initialItem: "homePage.qml"

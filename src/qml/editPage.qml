@@ -6,6 +6,11 @@ import Qt5Compat.GraphicalEffects
 Page {
     id: editPage
 
+    QtObject {
+        id: data
+        property var quiz: quizzesModel.data(quizzesModel.index(internals.currentIndex, 0), Qt.DispalyRole)
+    }
+
     Rectangle {
         id: root
         anchors.fill: parent
@@ -28,6 +33,11 @@ Page {
             font.family: patuaOne.name
             font.pointSize: 44
             color: "#880d26"
+        }
+
+        Text {
+            text: 'Name: ' + data.quiz?.name
+            font.pointSize: 20
         }
 
         RoundGradientButton {

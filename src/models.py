@@ -44,6 +44,10 @@ class QuizListModel(QAbstractListModel):
     def play(self, obj):
         print("Play:", obj.obj)
 
+    @Slot(int)
+    def details(self, index):
+        print(self._quizzes[index].obj.id)
+
     @Slot(QObject)
     def edit(self, obj):
         print("Edit:", obj.obj)

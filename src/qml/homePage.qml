@@ -56,7 +56,10 @@ Page {
                 id: btnNewQuiz
                 // text: qsTr("NOVI KVIZ")
                 text: "NOVI KVIZ"
-                onClicked: homePage.StackView.view.push("editPage.qml")
+                onClicked: {
+                    internals.currentIndex = -1
+                    homePage.StackView.view.push("editPage.qml")
+                }
             }
 
             RoundGradientButton {
@@ -118,7 +121,11 @@ Page {
                             Layout.preferredHeight: 40
                             Layout.preferredWidth: 30
                             Layout.alignment: Qt.AlignRight
-                            onClicked: { quizzesModel.edit(model.display) }
+                            onClicked: {
+                                quizzesModel.details(index)
+                                internals.currentIndex = index
+                                stack.push("editPage.qml")
+                            }
                         }
                         IconButton {
                             btnIconSource: "qrc:///assets/icon_delete.svg"
