@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
 import QtQuick.Layouts
 
 
@@ -125,11 +126,29 @@ Page {
                             Layout.preferredWidth: 30
                             Layout.alignment: Qt.AlignRight
                             Layout.rightMargin: 5
-                            onClicked: { quizzesModel.delete(model.display) }
+                            onClicked: {
+                                var d = dialogDelete.createObject(homePage)
+                                d.accepted.connect(function(){
+                                    quizzesModel.delete(model.display)
+                                })
+                                d.rejected.connect(function(){})
+                                d.visible = true
+                            }
                         }
                     }
                 }
             }
+        }
+    }
+
+    Component {
+        id: dialogDelete
+
+        MessageDialog {
+            title: "Brisanje kviza"
+            text: "Sigurno želite obrisati ovaj kviz?"
+            onVisibleChanged: if(!visible) destroy(1)
+            // standardButtons: StandardButton.No | StandardButton.Yes
         }
     }
 }

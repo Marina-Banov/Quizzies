@@ -11,7 +11,7 @@ class Database:
         self.create_tables()
 
     def get_quizzes(self):
-        self.query.exec_(f"SELECT * FROM quiz")
+        self.query.exec_(f"SELECT * FROM quiz ORDER BY id DESC")
         result = []
         while self.query.next():
             result.append(
