@@ -7,5 +7,6 @@
         <file>assets/icon_delete.svg</file>
         <file>assets/PatuaOne-Regular.ttf</file>
         <file>assets/Lato-Regular.ttf</file>
+        <file>init.sql</file>
     </qresource>
 </RCC>

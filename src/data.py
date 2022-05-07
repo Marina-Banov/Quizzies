@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json  # TODO possibly remove
+import re
 
-from PySide6.QtCore import QDir, QFile
+from PySide6.QtCore import QDir, QFile, QIODevice, QTextStream
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 
@@ -84,55 +85,16 @@ class Database:
         if all(table in self.database.tables() for table in table_names):
             return
 
+        f = QFile(":/init.sql")
+        f.open(QIODevice.ReadOnly | QFile.Text)
+        f_text = QTextStream(f).readAll().split(';')
+        f.close()
         # from the docs (https://doc.qt.io/qt-6/qsqlquery.html#exec):
         # For SQLite, the query string can contain only one statement at a time
-        self.query.exec_("""
-            CREATE TABLE IF NOT EXISTS quiz (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL
-            );
-        """)
-
-        self.query.exec_("""
-            CREATE TABLE IF NOT EXISTS category (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                quiz_id INTEGER NOT NULL,
-                FOREIGN KEY (quiz_id) REFERENCES quiz (id) ON DELETE CASCADE
-            );
-        """)
-
-        self.query.exec_("""
-            CREATE TABLE IF NOT EXISTS question (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                short_code VARCHAR(30) NOT NULL,
-                question TEXT NOT NULL,
-                answer TEXT NOT NULL,
-                type INTEGER NOT NULL,
-                'order' TEXT NOT NULL,
-                points INTEGER NOT NULL,
-                image BLOB
-            );
-        """)
-
-        self.query.exec_("""
-            CREATE TABLE IF NOT EXISTS category_question (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                category_id INTEGER NOT NULL,
-                question_id INTEGER NOT NULL,
-                FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE CASCADE,
-                FOREIGN KEY (question_id) REFERENCES question (id) ON DELETE CASCADE
-            );
-        """)
-
-        self.query.exec_("""       
-            CREATE TABLE IF NOT EXISTS choice (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                choice TEXT NOT NULL,
-                question_id INTEGER NOT NULL,
-                FOREIGN KEY (question_id) REFERENCES question (id) ON DELETE CASCADE
-            );
-        """)
+        for line in f_text:
+            if len(line) > 0:
+                line = re.sub('\\s+', ' ', line)
+                self.query.exec_(line)
 
 
 @dataclass_json
