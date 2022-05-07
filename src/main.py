@@ -6,8 +6,13 @@ from PySide6.QtCore import QUrl
 from PySide6.QtGui import QGuiApplication, QIcon
 
 import qrc  # static resources
-from data import Database
-from models import QObjectWrapper, QuizListModel
+from data import Database, Quiz
+from models.object_wrapper import QObjectWrapper
+from models.quizzes_list import QuizListModel
+from models.categories_tree import CategoriesTreeModel
+
+
+sys.path.append(str(Path(__file__).resolve()))
 
 
 def main():
@@ -22,10 +27,12 @@ def main():
     window.setResizeMode(QQuickView.SizeRootObjectToView)
 
     # Expose the list to the Qml code
+    categories_model = CategoriesTreeModel(Quiz())
     quizzes = [QObjectWrapper(q) for q in quizzes]
-    quizzes_model = QuizListModel(quizzes, db)
+    quizzes_model = QuizListModel(quizzes, db, categories_model)
     rc = window.rootContext()
     rc.setContextProperty("quizzesModel", quizzes_model)
+    rc.setContextProperty("categoriesModel", categories_model)
 
     # Load the QML file
     qml_file = Path(__file__).parent / "qml/main.qml"

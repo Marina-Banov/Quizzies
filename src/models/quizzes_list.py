@@ -1,28 +1,12 @@
-from PySide6.QtCore import QAbstractListModel, QModelIndex, \
-    QObject, Qt, Property, Signal, Slot
-
-
-class QObjectWrapper(QObject):
-    def __init__(self, obj):
-        QObject.__init__(self)
-        self._obj = obj
-
-    @property
-    def obj(self):
-        return self._obj
-
-    def _name(self):
-        return self._obj.name
-
-    changed = Signal()
-    name = Property(str, _name, notify=changed)
+from PySide6.QtCore import QAbstractListModel, QModelIndex, QObject, Qt, Slot
 
 
 class QuizListModel(QAbstractListModel):
-    def __init__(self, quizzes, db):
+    def __init__(self, quizzes, db, categories_model):
         QAbstractListModel.__init__(self)
         self._quizzes = quizzes
         self._db = db
+        self.categories_model = categories_model
 
     def rowCount(self, parent=QModelIndex()):
         return len(self._quizzes)
@@ -49,6 +33,8 @@ class QuizListModel(QAbstractListModel):
     def details(self, index):
         categories = self._db.get_quiz_details(self._quizzes[index].obj.id)
         self._quizzes[index].obj.categories = categories
+        # TODO no i don't think so
+        self.categories_model.quiz = self._quizzes[index].obj
 
     @Slot(QObject)
     def edit(self, obj):

@@ -1,6 +1,8 @@
+from dataclasses import dataclass, field
+from dataclasses_json import dataclass_json  # TODO possibly remove
+
 from PySide6.QtCore import QDir, QFile
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
-from dataclasses import dataclass, field
 
 
 class Database:
@@ -35,6 +37,7 @@ class Database:
                 questions.append(
                     Question(
                         subquery.value("id"),
+                        subquery.value("short_code"),
                         subquery.value("question"),
                         subquery.value("answer"),
                         subquery.value("type"),
@@ -95,13 +98,14 @@ class Database:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 quiz_id INTEGER NOT NULL,
-                FOREIGN KEY (quiz_id) REFERENCES quiz (id)
+                FOREIGN KEY (quiz_id) REFERENCES quiz (id) ON DELETE CASCADE
             );
         """)
 
         self.query.exec_("""
             CREATE TABLE IF NOT EXISTS question (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                short_code VARCHAR(30) NOT NULL,
                 question TEXT NOT NULL,
                 answer TEXT NOT NULL,
                 type INTEGER NOT NULL,
@@ -116,8 +120,8 @@ class Database:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 category_id INTEGER NOT NULL,
                 question_id INTEGER NOT NULL,
-                FOREIGN KEY (category_id) REFERENCES category (id),
-                FOREIGN KEY (question_id) REFERENCES question (id)
+                FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE CASCADE,
+                FOREIGN KEY (question_id) REFERENCES question (id) ON DELETE CASCADE
             );
         """)
 
@@ -126,11 +130,12 @@ class Database:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 choice TEXT NOT NULL,
                 question_id INTEGER NOT NULL,
-                FOREIGN KEY (question_id) REFERENCES question (id)
+                FOREIGN KEY (question_id) REFERENCES question (id) ON DELETE CASCADE
             );
         """)
 
 
+@dataclass_json
 @dataclass
 class Choice:
     _id: int  # private by convention
@@ -141,38 +146,42 @@ class Choice:
         return self._id
 
 
+@dataclass_json
 @dataclass
 class Question:
     _id: int
+    short_code: str
     question: str
     answer: str
     _type: int
     order: str
     points: int
     image: str = ""
-    choices: list[Choice] = field(default_factory=lambda: [])
+    choices: list[Choice] = field(default_factory=list)
 
     @property
     def id(self):
         return self._id
 
 
+@dataclass_json
 @dataclass
 class Category:
     _id: int
     name: str
-    questions: list[Question] = field(default_factory=lambda: [])
+    questions: list[Question] = field(default_factory=list)
 
     @property
     def id(self):
         return self._id
 
 
+@dataclass_json
 @dataclass
 class Quiz:
-    _id: int
-    name: str
-    categories: list[Category] = field(default_factory=lambda: [])
+    _id: int = 0
+    name: str = ""
+    categories: list[Category] = field(default_factory=list)
 
     @property
     def id(self):
