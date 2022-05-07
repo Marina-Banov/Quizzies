@@ -19,9 +19,10 @@ class QObjectWrapper(QObject):
 
 
 class QuizListModel(QAbstractListModel):
-    def __init__(self, quizzes):
+    def __init__(self, quizzes, db):
         QAbstractListModel.__init__(self)
         self._quizzes = quizzes
+        self._db = db
 
     def rowCount(self, parent=QModelIndex()):
         return len(self._quizzes)
@@ -46,7 +47,8 @@ class QuizListModel(QAbstractListModel):
 
     @Slot(int)
     def details(self, index):
-        print(self._quizzes[index].obj.id)
+        categories = self._db.get_quiz_details(self._quizzes[index].obj.id)
+        self._quizzes[index].obj.categories = categories
 
     @Slot(QObject)
     def edit(self, obj):

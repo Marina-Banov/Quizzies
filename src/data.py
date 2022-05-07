@@ -1,6 +1,6 @@
 from PySide6.QtCore import QDir, QFile
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 class Database:
@@ -20,6 +20,33 @@ class Database:
             # https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.fetchall
             # result.append(tuple(query.value(f) for f in fields))
         return result
+
+    def get_quiz_details(self, quiz_id):
+        self.query.exec_(f"SELECT * FROM category WHERE quiz_id={quiz_id}")
+        categories = []
+        while self.query.next():
+            category_id = self.query.value("id")
+            subquery = QSqlQuery()
+            subquery.exec_(f"SELECT * FROM category_question cq "
+                           f"JOIN question q ON q.id = cq.question_id "
+                           f"WHERE category_id={category_id}")
+            questions = []
+            while subquery.next():
+                questions.append(
+                    Question(
+                        subquery.value("id"),
+                        subquery.value("question"),
+                        subquery.value("answer"),
+                        subquery.value("type"),
+                        subquery.value("order"),
+                        subquery.value("points")
+                    )
+                )
+            categories.append(
+                Category(category_id, self.query.value("name"), questions)
+            )
+
+        return categories
 
     def connect(self):
         if not self.database.isValid():
@@ -105,10 +132,48 @@ class Database:
 
 
 @dataclass
-class Quiz:
+class Choice:
     _id: int  # private by convention
-    name: str
+    choice: str
 
     @property
     def id(self):  # read-only
+        return self._id
+
+
+@dataclass
+class Question:
+    _id: int
+    question: str
+    answer: str
+    _type: int
+    order: str
+    points: int
+    image: str = ""
+    choices: list[Choice] = field(default_factory=lambda: [])
+
+    @property
+    def id(self):
+        return self._id
+
+
+@dataclass
+class Category:
+    _id: int
+    name: str
+    questions: list[Question] = field(default_factory=lambda: [])
+
+    @property
+    def id(self):
+        return self._id
+
+
+@dataclass
+class Quiz:
+    _id: int
+    name: str
+    categories: list[Category] = field(default_factory=lambda: [])
+
+    @property
+    def id(self):
         return self._id

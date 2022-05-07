@@ -23,7 +23,7 @@ def main():
 
     # Expose the list to the Qml code
     quizzes = [QObjectWrapper(q) for q in quizzes]
-    quizzes_model = QuizListModel(quizzes)
+    quizzes_model = QuizListModel(quizzes, db)
     rc = window.rootContext()
     rc.setContextProperty("quizzesModel", quizzes_model)
 
