@@ -102,7 +102,7 @@ Page {
 
                         Text {
                             Layout.leftMargin: 10
-                            text: model.display.name
+                            text: model.name
                             color: Style.red
                             font.family: lato.name
                             font.pointSize: 12
@@ -114,7 +114,7 @@ Page {
                             Layout.preferredHeight: 40
                             Layout.preferredWidth: 30
                             Layout.alignment: Qt.AlignRight
-                            onClicked: { quizzesModel.play(model.display) }
+                            onClicked: { quizzesModel.play(model.id) }
                         }
                         IconButton {
                             btnIconSource: "qrc:///assets/icon_edit.svg"
@@ -136,7 +136,7 @@ Page {
                             onClicked: {
                                 var d = dialogDelete.createObject(homePage)
                                 d.accepted.connect(function(){
-                                    quizzesModel.delete(model.display)
+                                    quizzesModel.delete(model.id)
                                 })
                                 d.rejected.connect(function(){})
                                 d.visible = true

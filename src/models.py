@@ -1,54 +1,20 @@
-from enum import IntEnum, auto
-
 from PySide6.QtCore import (
+    QAbstractListModel,
     QAbstractItemModel,
-    QByteArray,
     QModelIndex,
-    Qt,
     Slot,
-    QObject,
 )
 
-from data import Question, Category, Quiz  # TODO import issues
-
-
-class CategoryRoles(IntEnum):
-    NameRole = Qt.UserRole
-    IdRole = auto()
-    TypeRole = auto()
-
-
-class QuestionRoles(IntEnum):
-    ShortCodeRole = CategoryRoles.TypeRole + 1
-    QuestionRole = auto()
-    AnswerRole = auto()
-    TypeRole = auto()
-    OrderRole = auto()
-    PointsRole = auto()
-
-
-ROLES_MAPPING = {
-    CategoryRoles.NameRole: "name",
-    CategoryRoles.IdRole: "id",
-    CategoryRoles.TypeRole: "type",
-    QuestionRoles.ShortCodeRole: "shortCode",
-    QuestionRoles.QuestionRole: "question",
-    QuestionRoles.AnswerRole: "answer",
-    QuestionRoles.TypeRole: "type",
-    QuestionRoles.OrderRole: "order",
-    QuestionRoles.PointsRole: "points",
-}
+from data import Question, Category, Quiz
+import roles
 
 
 class CategoriesTreeModel(QAbstractItemModel):
-    def __init__(self, quiz, execute_query):
+    def __init__(self, quiz, execute_query, role_names):
         super().__init__()
         self.quiz = quiz
-        self._rolenames = dict()
-        self._rolenames[Qt.DisplayRole] = QByteArray(b"display")
-        for role, name in ROLES_MAPPING.items():
-            self._rolenames[role] = QByteArray(name.encode())
         self.execute_query = execute_query
+        self.roleNames = lambda: role_names
 
     @Slot()
     def resetQuiz(self):
@@ -56,7 +22,6 @@ class CategoriesTreeModel(QAbstractItemModel):
 
     @Slot(int, str)
     def delete(self, _id, _type):
-        print(_id, _type)
         self.execute_query(f"DELETE FROM {_type} WHERE id={_id}")
 
     def set_quiz(self, quiz):
@@ -64,9 +29,6 @@ class CategoriesTreeModel(QAbstractItemModel):
 
     def columnCount(self, index=QModelIndex()):
         return 1
-
-    def roleNames(self):
-        return self._rolenames
 
     def rowCount(self, parent):
         if parent.isValid():
@@ -112,23 +74,13 @@ class CategoriesTreeModel(QAbstractItemModel):
                 return self.createIndex(row, 0, parent_item)
         return QModelIndex()
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=roles.NameRole):
         if not index.isValid():
             return
 
         item = index.internalPointer()
 
-        if role == Qt.DisplayRole:
-            if isinstance(item, Quiz):
-                return item.name
-            elif isinstance(item, Category):
-                return item.name
-            elif isinstance(item, Question):
-                return item.short_code
-            return
-        elif role == CategoryRoles.IdRole:
-            return item.id
-        elif role == CategoryRoles.TypeRole:
+        if role == roles.TypeRole:
             if isinstance(item, Quiz):
                 return "quiz"
             elif isinstance(item, Category):
@@ -136,7 +88,66 @@ class CategoriesTreeModel(QAbstractItemModel):
             elif isinstance(item, Question):
                 return "question"
             return
+        elif role == roles.IdRole:
+            return item.id
+        elif role == roles.NameRole:
+            if isinstance(item, Quiz):
+                return item.name
+            elif isinstance(item, Category):
+                return item.name
+            elif isinstance(item, Question):
+                return item.short_code
+        #     return
         # else:
-        #     prop = ROLES_MAPPING.get(role)
+        #     prop = roles.MAPPING.get(role)
         #     if prop is not None:
         #         return getattr(item, prop)
+
+
+class QuizListModel(QAbstractListModel):
+    def __init__(self,
+                 quizzes,
+                 get_quiz_details,
+                 set_current_quiz,
+                 execute_query,
+                 role_names):
+        QAbstractListModel.__init__(self)
+        self._quizzes = quizzes
+        self.get_quiz_details = get_quiz_details
+        self.set_current_quiz = set_current_quiz
+        self.execute_query = execute_query
+        self.roleNames = lambda: role_names
+
+    def rowCount(self, parent=QModelIndex()):
+        return len(self._quizzes)
+
+    def data(self, index, role=roles.NameRole):
+        if not index.isValid():
+            return
+
+        item = self._quizzes[index.row()]
+
+        if role == roles.IdRole:
+            return item.id
+        elif role == roles.NameRole:
+            return item.name
+
+    def add_row(self, q):
+        self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())
+        self._quizzes.append(q)
+        self.endInsertRows()
+
+    @Slot(int)
+    def play(self, _id):
+        print("Play:", _id)
+
+    @Slot(int)
+    def details(self, index):
+        item = self._quizzes[index]
+        categories = self.get_quiz_details(item.id)
+        item.categories = categories
+        self.set_current_quiz(item)
+
+    @Slot(int)
+    def delete(self, _id):
+        self.execute_query(f"DELETE FROM quiz WHERE id={_id}")

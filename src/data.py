@@ -24,8 +24,7 @@ class Database:
         return result
 
     def execute_query(self, q):
-        print(q)
-        # print(self.query.exec_(q))
+        print(self.query.exec_(q))
 
     def get_quiz_details(self, quiz_id):
         self.query.exec_(f"SELECT * FROM category WHERE quiz_id={quiz_id}")

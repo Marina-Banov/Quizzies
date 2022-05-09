@@ -9,7 +9,8 @@ Page {
 
     QtObject {
         id: data
-        property var quiz: quizzesModel.data(quizzesModel.index(internals.currentIndex, 0), Qt.DispalyRole)
+        property var quiz: quizzesModel.data(quizzesModel.index(internals
+        .currentIndex, 0))
     }
 
     Rectangle {
@@ -111,7 +112,7 @@ Page {
                         anchors.leftMargin: 10 + (treeDelegate.isTreeNode ?
                         (treeDelegate.depth + 1) * treeDelegate.indent : 0)
                         clip: true
-                        text: model.display
+                        text: model.name
                         font.family: lato.name
                         font.pointSize: 10
                         color: Style.red
