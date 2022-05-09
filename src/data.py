@@ -23,6 +23,10 @@ class Database:
             # result.append(tuple(query.value(f) for f in fields))
         return result
 
+    def execute_query(self, q):
+        print(q)
+        # print(self.query.exec_(q))
+
     def get_quiz_details(self, quiz_id):
         self.query.exec_(f"SELECT * FROM category WHERE quiz_id={quiz_id}")
         categories = []

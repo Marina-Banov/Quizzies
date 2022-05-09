@@ -122,6 +122,14 @@ Page {
                         anchors.right: parent.right
                         height: parent.height
                         width: height
+                        onClicked: {
+                            var d = dialogDelete.createObject(editPage)
+                            d.accepted.connect(function(){
+                                categoriesModel.delete(model.id, model.type)
+                            })
+                            d.rejected.connect(function(){})
+                            d.visible = true
+                        }
                     }
                 }
             }

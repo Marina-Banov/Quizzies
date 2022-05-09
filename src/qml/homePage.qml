@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Dialogs
 import QtQuick.Layouts
 
 
@@ -146,17 +145,6 @@ Page {
                     }
                 }
             }
-        }
-    }
-
-    Component {
-        id: dialogDelete
-
-        MessageDialog {
-            title: "Brisanje kviza"
-            text: "Sigurno želite obrisati ovaj kviz?"
-            onVisibleChanged: if(!visible) destroy(1)
-            // standardButtons: StandardButton.No | StandardButton.Yes
         }
     }
 }

@@ -5,7 +5,8 @@ from PySide6.QtCore import (
     QByteArray,
     QModelIndex,
     Qt,
-    Slot
+    Slot,
+    QObject,
 )
 
 from data import Question, Category, Quiz  # TODO import issues
@@ -13,10 +14,12 @@ from data import Question, Category, Quiz  # TODO import issues
 
 class CategoryRoles(IntEnum):
     NameRole = Qt.UserRole
+    IdRole = auto()
+    TypeRole = auto()
 
 
 class QuestionRoles(IntEnum):
-    ShortCodeRole = CategoryRoles.NameRole + 1
+    ShortCodeRole = CategoryRoles.TypeRole + 1
     QuestionRole = auto()
     AnswerRole = auto()
     TypeRole = auto()
@@ -26,6 +29,8 @@ class QuestionRoles(IntEnum):
 
 ROLES_MAPPING = {
     CategoryRoles.NameRole: "name",
+    CategoryRoles.IdRole: "id",
+    CategoryRoles.TypeRole: "type",
     QuestionRoles.ShortCodeRole: "shortCode",
     QuestionRoles.QuestionRole: "question",
     QuestionRoles.AnswerRole: "answer",
@@ -36,17 +41,23 @@ ROLES_MAPPING = {
 
 
 class CategoriesTreeModel(QAbstractItemModel):
-    def __init__(self, quiz):
+    def __init__(self, quiz, execute_query):
         super().__init__()
         self.quiz = quiz
         self._rolenames = dict()
         self._rolenames[Qt.DisplayRole] = QByteArray(b"display")
         for role, name in ROLES_MAPPING.items():
             self._rolenames[role] = QByteArray(name.encode())
+        self.execute_query = execute_query
 
     @Slot()
     def resetQuiz(self):
         self.quiz = Quiz()
+
+    @Slot(int, str)
+    def delete(self, _id, _type):
+        print(_id, _type)
+        self.execute_query(f"DELETE FROM {_type} WHERE id={_id}")
 
     def set_quiz(self, quiz):
         self.quiz = quiz
@@ -114,6 +125,16 @@ class CategoriesTreeModel(QAbstractItemModel):
                 return item.name
             elif isinstance(item, Question):
                 return item.short_code
+            return
+        elif role == CategoryRoles.IdRole:
+            return item.id
+        elif role == CategoryRoles.TypeRole:
+            if isinstance(item, Quiz):
+                return "quiz"
+            elif isinstance(item, Category):
+                return "category"
+            elif isinstance(item, Question):
+                return "question"
             return
         # else:
         #     prop = ROLES_MAPPING.get(role)
