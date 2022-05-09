@@ -11,6 +11,7 @@ class Database:
         self.connect()
         self.query = QSqlQuery()
         self.create_tables()
+        self.query.exec_("PRAGMA foreign_keys=ON")
 
     def get_quizzes(self):
         self.query.exec_(f"SELECT * FROM quiz ORDER BY id DESC")
@@ -24,7 +25,7 @@ class Database:
         return result
 
     def execute_query(self, q):
-        print(self.query.exec_(q))
+        return self.query.exec_(q)
 
     def get_quiz_details(self, quiz_id):
         self.query.exec_(f"SELECT * FROM category WHERE quiz_id={quiz_id}")

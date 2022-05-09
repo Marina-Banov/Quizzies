@@ -136,7 +136,7 @@ Page {
                             onClicked: {
                                 var d = dialogDelete.createObject(homePage)
                                 d.accepted.connect(function(){
-                                    quizzesModel.delete(model.id)
+                                    quizzesModel.delete(index)
                                 })
                                 d.rejected.connect(function(){})
                                 d.visible = true

@@ -18,6 +18,11 @@ INSERT INTO category(name, quiz_id) VALUES ('TV i film', 1);
 INSERT INTO category(name, quiz_id) VALUES ('Geografija', 2);
 INSERT INTO category(name, quiz_id) VALUES ('Videoigre', 2);
 
+-- if a category is deleted the questions won't be deleted
+-- that is intended behaviour because a question could belong
+-- to multiple categories if used in multiple quizzes
+-- consider adding those list checkboxes to enable
+-- deleting multiple questions and/or categories at once
 CREATE TABLE IF NOT EXISTS question (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     short_code VARCHAR(30) NOT NULL,

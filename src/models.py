@@ -10,9 +10,9 @@ import roles
 
 
 class CategoriesTreeModel(QAbstractItemModel):
-    def __init__(self, quiz, execute_query, role_names):
+    def __init__(self, execute_query, role_names):
         super().__init__()
-        self.quiz = quiz
+        self.quiz = Quiz()
         self.execute_query = execute_query
         self.roleNames = lambda: role_names
 
@@ -22,7 +22,8 @@ class CategoriesTreeModel(QAbstractItemModel):
 
     @Slot(int, str)
     def delete(self, _id, _type):
-        self.execute_query(f"DELETE FROM {_type} WHERE id={_id}")
+        if self.execute_query(f"DELETE FROM {_type} WHERE id={_id}"):
+            self.removeRow(*self.get_element_index(_id, _type))
 
     def set_quiz(self, quiz):
         self.quiz = quiz
@@ -40,6 +41,30 @@ class CategoriesTreeModel(QAbstractItemModel):
             return 0
         else:
             return len(self.quiz.categories)
+
+    def removeRow(self, i, element=QModelIndex()):  # i == element.row()
+        if i == -1 or not element.isValid():
+            return
+        parent = self.parent(element)
+        self.beginRemoveRows(parent, i, i)
+        parent = parent.internalPointer()
+        if isinstance(parent, Category):
+            del parent.questions[i]
+        else:
+            del self.quiz.categories[i]
+        self.endRemoveRows()
+
+    def get_element_index(self, _id, _type):
+        if _type == "category":
+            for i, category in enumerate(self.quiz.categories):
+                if category.id == _id:
+                    return i, self.createIndex(i, 0, category)
+        elif _type == "question":
+            for category in self.quiz.categories:
+                for i, question in enumerate(category.questions):
+                    if question.id == _id:
+                        return i, self.createIndex(i, 0, question)
+        return -1, QModelIndex()
 
     def index(self, row, column, parent=QModelIndex()):
         if column != 0:
@@ -61,6 +86,8 @@ class CategoriesTreeModel(QAbstractItemModel):
             return QModelIndex()
         item = index.internalPointer()
         if isinstance(item, Category):
+            # root object (quiz) is not displayed, categories are at the root
+            # this also means that their parent in this model is None !
             return QModelIndex()
         elif isinstance(item, Question):
             row = -1
@@ -137,6 +164,11 @@ class QuizListModel(QAbstractListModel):
         self._quizzes.append(q)
         self.endInsertRows()
 
+    def removeRow(self, i, parent=QModelIndex()):
+        self.beginRemoveRows(parent, i, i)
+        del self._quizzes[i]
+        self.endRemoveRows()
+
     @Slot(int)
     def play(self, _id):
         print("Play:", _id)
@@ -149,5 +181,7 @@ class QuizListModel(QAbstractListModel):
         self.set_current_quiz(item)
 
     @Slot(int)
-    def delete(self, _id):
-        self.execute_query(f"DELETE FROM quiz WHERE id={_id}")
+    def delete(self, index):
+        item = self._quizzes[index]
+        if self.execute_query(f"DELETE FROM quiz WHERE id={item.id}"):
+            self.removeRow(index)

@@ -28,8 +28,7 @@ def main():
     window.setResizeMode(QQuickView.SizeRootObjectToView)
 
     # Expose the data to the QML code
-    categories_model = CategoriesTreeModel(Quiz(),
-                                           db.execute_query,
+    categories_model = CategoriesTreeModel(db.execute_query,
                                            role_names)
     quizzes = [q for q in quizzes]
     quizzes_model = QuizListModel(quizzes,
