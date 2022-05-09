@@ -2,11 +2,11 @@ from PySide6.QtCore import QAbstractListModel, QModelIndex, QObject, Qt, Slot
 
 
 class QuizListModel(QAbstractListModel):
-    def __init__(self, quizzes, db, categories_model):
+    def __init__(self, quizzes, get_quiz_details, set_current_quiz):
         QAbstractListModel.__init__(self)
         self._quizzes = quizzes
-        self._db = db
-        self.categories_model = categories_model
+        self.get_quiz_details = get_quiz_details
+        self.set_current_quiz = set_current_quiz
 
     def rowCount(self, parent=QModelIndex()):
         return len(self._quizzes)
@@ -31,10 +31,9 @@ class QuizListModel(QAbstractListModel):
 
     @Slot(int)
     def details(self, index):
-        categories = self._db.get_quiz_details(self._quizzes[index].obj.id)
+        categories = self.get_quiz_details(self._quizzes[index].obj.id)
         self._quizzes[index].obj.categories = categories
-        # TODO no i don't think so
-        self.categories_model.quiz = self._quizzes[index].obj
+        self.set_current_quiz(self._quizzes[index].obj)
 
     @Slot(QObject)
     def edit(self, obj):

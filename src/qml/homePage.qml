@@ -58,6 +58,7 @@ Page {
                 text: "NOVI KVIZ"
                 onClicked: {
                     internals.currentIndex = -1
+                    categoriesModel.resetQuiz()
                     homePage.StackView.view.push("editPage.qml")
                 }
             }
@@ -76,7 +77,7 @@ Page {
             width: if(root.width >= 828) return 300; else return 0
             height: parent.height
             color: "white"
-            opacity: 0.85
+            opacity: .85
             anchors.right: parent.right
 
             PropertyAnimation {

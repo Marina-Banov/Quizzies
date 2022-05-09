@@ -11,7 +11,6 @@ from models.object_wrapper import QObjectWrapper
 from models.quizzes_list import QuizListModel
 from models.categories_tree import CategoriesTreeModel
 
-
 sys.path.append(str(Path(__file__).resolve()))
 
 
@@ -29,7 +28,9 @@ def main():
     # Expose the data to the QML code
     categories_model = CategoriesTreeModel(Quiz())
     quizzes = [QObjectWrapper(q) for q in quizzes]
-    quizzes_model = QuizListModel(quizzes, db, categories_model)
+    quizzes_model = QuizListModel(quizzes,
+                                  db.get_quiz_details,
+                                  categories_model.set_quiz)
     rc = window.rootContext()
     rc.setContextProperty("quizzesModel", quizzes_model)
     rc.setContextProperty("categoriesModel", categories_model)

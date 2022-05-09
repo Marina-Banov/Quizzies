@@ -1,6 +1,12 @@
 from enum import IntEnum, auto
 
-from PySide6.QtCore import QAbstractItemModel, QByteArray, QModelIndex, Qt
+from PySide6.QtCore import (
+    QAbstractItemModel,
+    QByteArray,
+    QModelIndex,
+    Qt,
+    Slot
+)
 
 from data import Question, Category, Quiz  # TODO import issues
 
@@ -37,6 +43,13 @@ class CategoriesTreeModel(QAbstractItemModel):
         self._rolenames[Qt.DisplayRole] = QByteArray(b"display")
         for role, name in ROLES_MAPPING.items():
             self._rolenames[role] = QByteArray(name.encode())
+
+    @Slot()
+    def resetQuiz(self):
+        self.quiz = Quiz()
+
+    def set_quiz(self, quiz):
+        self.quiz = quiz
 
     def columnCount(self, index=QModelIndex()):
         return 1

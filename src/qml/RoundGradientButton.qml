@@ -15,6 +15,6 @@ RoundButton {
             GradientStop { position: 0; color: Style.pink }
             GradientStop { position: 1; color: Style.orange }
         }
-        opacity: button.pressed ? 1 : 0.9
+        opacity: button.pressed ? 1 : .9
     }
 }

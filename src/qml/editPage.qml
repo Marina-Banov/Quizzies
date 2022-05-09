@@ -19,8 +19,8 @@ Page {
         RadialGradient {
             anchors.fill: parent
             gradient: Gradient {
-                GradientStop { position: 0.2; color: Style.pinkLight }
-                GradientStop { position: 0.75; color: Style.pinkVeryLight }
+                GradientStop { position: .2; color: Style.pinkLight }
+                GradientStop { position: .75; color: Style.pinkVeryLight }
             }
         }
 
@@ -63,7 +63,7 @@ Page {
             anchors.left: parent.left
             width: 200
             color: "white"
-            opacity: 0.85
+            opacity: .8
 
             TreeView {
                 id: categoriesTreeView
