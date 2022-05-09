@@ -43,15 +43,15 @@ INSERT INTO question(question, short_code, answer, type, "order", points) VALUES
 );
 INSERT INTO question(question, short_code, answer, type, "order", points) VALUES (
     'Koji je film pogrešno najavljen kao pobjednik za najbolji film na dodjeli Oskara 2017. godine, što se smatra jednim od najvećih pogrešaka ikada na dodjeli Oskara?',
-    'La La Land', 'La La Land', 1, '2', 1
+    'Blam na Oskarima', 'La La Land', 1, '2', 1
 );
 INSERT INTO question(question, short_code, answer, type, "order", points) VALUES (
     'Ljudi stvarno svakakvo znaju nazvati određena geografska mjesta, počevši od jezera u Massachusettsu s 45 slova do nekoliko različitih lokacija, rijeka i otoka čije se ime sastoji od samo jednog slova. Koja država ima službeno najduže ime na svijetu sa 56 slova u svome nazivu, a kada skratimo taj naziv dobijemo samo 2 slova?',
-    'UK', 'United Kingdom of Great Brittain and Northern Ireland (U.K.)', 1, '1', 1
+    'Najdulje ime države', 'United Kingdom of Great Brittain and Northern Ireland (U.K.)', 1, '1', 1
 );
 INSERT INTO question(question, short_code, answer, type, "order", points) VALUES (
     'Brazil je najveća država u Južnoj Americi te graniči sa svim državama tog kontinenta osim dvije. Koje to države Južne Amerike ne graniče s Brazilom?',
-    'Brazil', 'Čile i Ekvador', 1, '2', 1
+    'Ne graniče s Brazilom', 'Čile i Ekvador', 1, '2', 1
 );
 INSERT INTO question(question, short_code, answer, type, "order", points) VALUES (
     'Kako se zove glavna protagonistica, lovkinja na glave, u video igri Metroid, ujedno i jedna od prvih ženskih protagonistica videoigara?',
@@ -59,7 +59,7 @@ INSERT INTO question(question, short_code, answer, type, "order", points) VALUES
 );
 INSERT INTO question(question, short_code, answer, type, "order", points) VALUES (
     'U izvornoj arkadnoj verziji Donkey Konga, kako se zvao lik koji će kasnije biti poznat kao Mario?',
-    'Jumpman', 'Jumpman', 1, '2', 1
+    'Donkey Kong lik', 'Jumpman', 1, '2', 1
 );
 
 CREATE TABLE IF NOT EXISTS choice (

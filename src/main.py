@@ -26,7 +26,7 @@ def main():
     window.setTitle("Quizzies")
     window.setResizeMode(QQuickView.SizeRootObjectToView)
 
-    # Expose the list to the Qml code
+    # Expose the data to the QML code
     categories_model = CategoriesTreeModel(Quiz())
     quizzes = [QObjectWrapper(q) for q in quizzes]
     quizzes_model = QuizListModel(quizzes, db, categories_model)

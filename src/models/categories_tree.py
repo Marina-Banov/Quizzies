@@ -5,25 +5,27 @@ from PySide6.QtCore import QAbstractItemModel, QByteArray, QModelIndex, Qt
 from data import Question, Category, Quiz  # TODO import issues
 
 
-class SchoolRoles(IntEnum):
-    SchoolNameRole = Qt.UserRole
+class CategoryRoles(IntEnum):
+    NameRole = Qt.UserRole
 
 
-class StudentRoles(IntEnum):
-    FirstnameRole = SchoolRoles.SchoolNameRole + 1
-    LastNameRole = auto()
-    AgeRole = auto()
-    GenderRole = auto()
-    PhoneNumberRole = auto()
+class QuestionRoles(IntEnum):
+    ShortCodeRole = CategoryRoles.NameRole + 1
+    QuestionRole = auto()
+    AnswerRole = auto()
+    TypeRole = auto()
+    OrderRole = auto()
+    PointsRole = auto()
 
 
-ROLES_MAPPPING = {
-    SchoolRoles.SchoolNameRole: "SchoolName",
-    StudentRoles.FirstnameRole: "FirstName",
-    StudentRoles.LastNameRole: "LastName",
-    StudentRoles.AgeRole: "Age",
-    StudentRoles.GenderRole: "Gender",
-    StudentRoles.PhoneNumberRole: "PhoneNumber",
+ROLES_MAPPING = {
+    CategoryRoles.NameRole: "name",
+    QuestionRoles.ShortCodeRole: "shortCode",
+    QuestionRoles.QuestionRole: "question",
+    QuestionRoles.AnswerRole: "answer",
+    QuestionRoles.TypeRole: "type",
+    QuestionRoles.OrderRole: "order",
+    QuestionRoles.PointsRole: "points",
 }
 
 
@@ -33,7 +35,7 @@ class CategoriesTreeModel(QAbstractItemModel):
         self.quiz = quiz
         self._rolenames = dict()
         self._rolenames[Qt.DisplayRole] = QByteArray(b"display")
-        for role, name in ROLES_MAPPPING.items():
+        for role, name in ROLES_MAPPING.items():
             self._rolenames[role] = QByteArray(name.encode())
 
     def columnCount(self, index=QModelIndex()):
@@ -89,16 +91,18 @@ class CategoriesTreeModel(QAbstractItemModel):
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid():
             return
+
         item = index.internalPointer()
+
         if role == Qt.DisplayRole:
-            return str(index.internalPointer())
-        elif role == SchoolRoles.SchoolNameRole:
             if isinstance(item, Quiz):
                 return item.name
             elif isinstance(item, Category):
-                return index.parent().internalPointer().name
+                return item.name
+            elif isinstance(item, Question):
+                return item.short_code
             return
-        elif isinstance(item, Category):
-            prop = ROLES_MAPPPING.get(role)
-            if prop is not None:
-                return getattr(item, prop)
+        # else:
+        #     prop = ROLES_MAPPING.get(role)
+        #     if prop is not None:
+        #         return getattr(item, prop)

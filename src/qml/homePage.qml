@@ -27,7 +27,7 @@ Page {
             text: "Dobrodošli u Quizzies!"
             font.family: patuaOne.name
             font.pointSize: 44
-            color: "#880d26"
+            color: Style.redDark
         }
 
         Text {
@@ -42,7 +42,7 @@ Page {
             font.family: lato.name
             wrapMode: Text.WordWrap
             font.pointSize: 14
-            color: "#B11030"
+            color: Style.red
         }
 
         Row {
@@ -75,7 +75,7 @@ Page {
             id: menu
             width: if(root.width >= 828) return 300; else return 0
             height: parent.height
-            color: "#ffffff"
+            color: "white"
             opacity: 0.85
             anchors.right: parent.right
 
@@ -103,7 +103,7 @@ Page {
                         Text {
                             Layout.leftMargin: 10
                             text: model.display.name
-                            color: "#B11030"
+                            color: Style.red
                             font.family: lato.name
                             font.pointSize: 12
                             verticalAlignment: Text.AlignVCenter

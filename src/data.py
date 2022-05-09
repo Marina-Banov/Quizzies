@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json  # TODO possibly remove
 import re
 
 from PySide6.QtCore import QDir, QFile, QIODevice, QTextStream
@@ -97,7 +96,6 @@ class Database:
                 self.query.exec_(line)
 
 
-@dataclass_json
 @dataclass
 class Choice:
     _id: int  # private by convention
@@ -108,7 +106,6 @@ class Choice:
         return self._id
 
 
-@dataclass_json
 @dataclass
 class Question:
     _id: int
@@ -126,7 +123,6 @@ class Question:
         return self._id
 
 
-@dataclass_json
 @dataclass
 class Category:
     _id: int
@@ -138,7 +134,6 @@ class Category:
         return self._id
 
 
-@dataclass_json
 @dataclass
 class Quiz:
     _id: int = 0

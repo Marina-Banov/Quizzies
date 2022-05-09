@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 
 
@@ -18,80 +19,134 @@ Page {
         RadialGradient {
             anchors.fill: parent
             gradient: Gradient {
-                GradientStop { position: 0.2; color: "#FFF3F3" }
-                GradientStop { position: 0.75; color: "#FFC8DC" }
+                GradientStop { position: 0.2; color: Style.pinkLight }
+                GradientStop { position: 0.75; color: Style.pinkVeryLight }
             }
         }
 
-        Text {
-            id: title
-            width: 400
-            x: 50; y: 90
-            wrapMode: Text.WordWrap
-            // text: qsTr("Dobrodošli u Quizzies!")
-            text: "Edit page?"
-            font.family: patuaOne.name
-            font.pointSize: 44
-            color: "#880d26"
-        }
-
-        Text {
-            text: 'Name: ' + data.quiz?.name
-            font.pointSize: 20
-        }
-
-        RoundGradientButton {
-            anchors.topMargin: 25
-            anchors.top: title.bottom
-            anchors.left: title.left
-            // text: qsTr("GO BACK")
-            text: "GO BACK"
-            onClicked: editPage.StackView.view.pop()
-        }
-
-        TreeView {
-            id: categoriesTreeView
-            model: categoriesModel
+        RowLayout {
+            id: topBar
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
+            anchors.left: parent.left
             anchors.right: parent.right
-            width: 260
+            anchors.leftMargin: 20
+            height: 60
+            Layout.alignment: Qt.AlignVCenter
 
-            delegate: Item {
-                id: treeDelegate
+            RoundGradientButton {
+                implicitWidth: 40
+                icon.source: "qrc:///assets/icon_back.svg"
+                icon.width: 18
+                icon.height: 18
+                onClicked: editPage.StackView.view.pop()
+            }
 
-                implicitWidth: padding + label.x + label.implicitWidth + padding
-                implicitHeight: label.implicitHeight * 1.5
+            Text {
+                // text: qsTr("Uredi kviz")
+                text: "Uredi kviz"
+                font.family: patuaOne.name
+                font.pointSize: 24
+                color: Style.redDark
+            }
 
-                readonly property real indent: 20
-                readonly property real padding: 5
+            Text {
+                text: 'Ime kviza: ' + data.quiz?.name
+                font.family: lato.name
+                font.pointSize: 12
+                color: Style.red
+            }
+        }
 
-                // Assigned to by TreeView:
-                required property TreeView treeView
-                required property bool isTreeNode
-                required property bool expanded
-                required property int hasChildren
-                required property int depth
+        Rectangle {
+            anchors.top: topBar.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            width: 200
+            color: "white"
+            opacity: 0.85
 
-                TapHandler {
-                    onTapped: treeView.toggleExpanded(row)
+            TreeView {
+                id: categoriesTreeView
+                model: categoriesModel
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: bottomBar.top
+
+                delegate: Rectangle {
+                    id: treeDelegate
+                    implicitWidth: parent.width
+                    implicitHeight: 30
+
+                    readonly property real indent: 15
+                    readonly property real padding: 20
+
+                    // Assigned to by TreeView:
+                    required property TreeView treeView
+                    required property bool isTreeNode
+                    required property bool expanded
+                    required property int hasChildren
+                    required property int depth
+
+                    TapHandler {
+                        onTapped: treeView.toggleExpanded(row)
+                    }
+
+                    Text {
+                        id: indicator
+                        visible: treeDelegate.isTreeNode && treeDelegate.hasChildren
+                        x: 8
+                        // x: padding + (treeDelegate.depth * treeDelegate.indent)
+                        anchors.verticalCenter: label.verticalCenter
+                        text: "▸"
+                        font.pointSize: 12
+                        color: Style.red
+                        rotation: treeDelegate.expanded ? 90 : 0
+                    }
+
+                    Text {
+                        id: label
+                        anchors.fill: parent
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.leftMargin: 10 + (treeDelegate.isTreeNode ?
+                        (treeDelegate.depth + 1) * treeDelegate.indent : 0)
+                        clip: true
+                        text: model.display
+                        font.family: lato.name
+                        font.pointSize: 10
+                        color: Style.red
+                    }
+
+                    IconButton {
+                        btnIconSource: "qrc:///assets/icon_delete.svg"
+                        anchors.right: parent.right
+                        height: parent.height
+                        width: height
+                    }
+                }
+            }
+
+            RowLayout {
+                id: bottomBar
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.margins: 10
+                height: 30
+                Layout.alignment: Qt.AlignVCenter
+
+                RoundGradientButton {
+                    implicitWidth: 80
+                    implicitHeight: 30
+                    // font.pointSize: 10
+                    text: "SPREMI"
                 }
 
-                Text {
-                    id: indicator
-                    visible: treeDelegate.isTreeNode && treeDelegate.hasChildren
-                    x: padding + (treeDelegate.depth * treeDelegate.indent)
-                    anchors.verticalCenter: label.verticalCenter
-                    text: "▸"
-                    rotation: treeDelegate.expanded ? 90 : 0
-                }
-
-                Text {
-                    id: label
-                    x: padding + (treeDelegate.isTreeNode ? (treeDelegate.depth + 1) * treeDelegate.indent : 0)
-                    width: treeDelegate.width - treeDelegate.padding - x
-                    clip: true
-                    text: model.display
+                RoundGradientButton {
+                    implicitWidth: 90
+                    implicitHeight: 30
+                    // font.pointSize: 10
+                    text: "ISPROBAJ"
                 }
             }
         }
