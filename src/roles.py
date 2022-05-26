@@ -9,22 +9,22 @@ NameRole = Qt.UserRole + 2
 
 
 class QuestionRoles(IntEnum):
-    ShortCodeRole = Qt.UserRole + 3
-    QuestionRole = auto()
+    QuestionRole = Qt.UserRole + 3
     AnswerRole = auto()
     QTypeRole = auto()
     OrderRole = auto()
     PointsRole = auto()
+    ImageRole = auto()
 
 
 MAPPINGS = {
     TypeRole: "type",
     IdRole: "id",
     NameRole: "name",
-    QuestionRoles.ShortCodeRole: "shortCode",
     QuestionRoles.QuestionRole: "question",
     QuestionRoles.AnswerRole: "answer",
     QuestionRoles.QTypeRole: "qtype",
     QuestionRoles.OrderRole: "order",
     QuestionRoles.PointsRole: "points",
+    QuestionRoles.ImageRole: "image",
 }

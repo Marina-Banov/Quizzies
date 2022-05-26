@@ -106,29 +106,9 @@ class CategoriesTreeModel(QAbstractItemModel):
             return
 
         item = index.internalPointer()
-
-        if role == roles.TypeRole:
-            if isinstance(item, Quiz):
-                return "quiz"
-            elif isinstance(item, Category):
-                return "category"
-            elif isinstance(item, Question):
-                return "question"
-            return
-        elif role == roles.IdRole:
-            return item.id
-        elif role == roles.NameRole:
-            if isinstance(item, Quiz):
-                return item.name
-            elif isinstance(item, Category):
-                return item.name
-            elif isinstance(item, Question):
-                return item.short_code
-        #     return
-        # else:
-        #     prop = roles.MAPPING.get(role)
-        #     if prop is not None:
-        #         return getattr(item, prop)
+        prop = roles.MAPPINGS.get(role)
+        if prop is not None:
+            return getattr(item, prop)
 
 
 class QuizListModel(QAbstractListModel):
@@ -153,11 +133,9 @@ class QuizListModel(QAbstractListModel):
             return
 
         item = self._quizzes[index.row()]
-
-        if role == roles.IdRole:
-            return item.id
-        elif role == roles.NameRole:
-            return item.name
+        prop = roles.MAPPINGS.get(role)
+        if prop is not None:
+            return getattr(item, prop)
 
     def add_row(self, q):
         self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())

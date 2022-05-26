@@ -46,7 +46,7 @@ class Database:
                         subquery.value("answer"),
                         subquery.value("type"),
                         subquery.value("order"),
-                        subquery.value("points")
+                        subquery.value("points"),
                     )
                 )
             categories.append(
@@ -113,7 +113,7 @@ class Choice:
 @dataclass
 class Question:
     _id: int
-    short_code: str
+    name: str
     question: str
     answer: str
     _type: int
@@ -121,6 +121,7 @@ class Question:
     points: int
     image: str = ""
     choices: list[Choice] = field(default_factory=list)
+    type = "question"
 
     @property
     def id(self):
@@ -132,6 +133,7 @@ class Category:
     _id: int
     name: str
     questions: list[Question] = field(default_factory=list)
+    type = "category"
 
     @property
     def id(self):
@@ -143,6 +145,7 @@ class Quiz:
     _id: int = 0
     name: str = ""
     categories: list[Category] = field(default_factory=list)
+    type = "quiz"
 
     @property
     def id(self):

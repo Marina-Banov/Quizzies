@@ -6,7 +6,7 @@ from PySide6.QtCore import QUrl, Qt, QByteArray
 from PySide6.QtGui import QGuiApplication, QIcon
 
 import qrc  # static resources
-from data import Database, Quiz
+from data import Database
 from models import QuizListModel, CategoriesTreeModel
 import roles
 
