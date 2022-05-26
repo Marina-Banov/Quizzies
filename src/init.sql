@@ -1,3 +1,4 @@
+-- all comments should end with a semicolon;
 CREATE TABLE IF NOT EXISTS quiz (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
@@ -22,7 +23,7 @@ INSERT INTO category(name, quiz_id) VALUES ('Videoigre', 2);
 -- that is intended behaviour because a question could belong
 -- to multiple categories if used in multiple quizzes
 -- consider adding those list checkboxes to enable
--- deleting multiple questions and/or categories at once
+-- deleting multiple questions and/or categories at once;
 CREATE TABLE IF NOT EXISTS question (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     short_code VARCHAR(30) NOT NULL,

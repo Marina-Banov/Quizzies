@@ -94,7 +94,7 @@ Page {
                 delegate: Rectangle {
                     color: "white"
                     height: 40
-                    width: parent.width
+                    width: menu.width
 
                     RowLayout {
                         anchors.fill: parent
