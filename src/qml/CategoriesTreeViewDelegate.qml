@@ -14,7 +14,7 @@ Rectangle {
 
     readonly property real indent: 15
     readonly property real padding: 20
-    readonly property var i: categoriesModel.getElementIndex(model.id, model.type)
+    readonly property var i: categoriesModel.getElementIndex(id, type)
 
     // Assigned to by TreeView:
     required property TreeView treeView
@@ -26,7 +26,7 @@ Rectangle {
     TapHandler {
         onTapped: {
             treeView.toggleExpanded(row)
-            if (model.type == "question") {
+            if (type == "question") {
                 treeViewSelection.select(i, ItemSelectionModel.ClearAndSelect)
             }
         }
@@ -51,7 +51,7 @@ Rectangle {
         anchors.leftMargin: 10 + (treeDelegate.isTreeNode ?
         (treeDelegate.depth + 1) * treeDelegate.indent : 0)
         clip: true
-        text: model.name
+        text: name
         font.family: lato.name
         font.pointSize: 10
         color: Style.red
@@ -62,7 +62,7 @@ Rectangle {
         anchors.right: btnDelete.left
         height: parent.height
         width: 24
-        visible: model.type == "category"
+        visible: type == "category"
         onClicked: {}
     }
 
@@ -75,7 +75,7 @@ Rectangle {
         onClicked: {
             var d = dialogDelete.createObject(editPage)
             d.accepted.connect(function(){
-                categoriesModel.delete(model.id, model.type)
+                categoriesModel.delete(id, type)
             })
             d.rejected.connect(function(){})
             d.visible = true

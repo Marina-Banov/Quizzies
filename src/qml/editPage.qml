@@ -46,7 +46,7 @@ Page {
             }
 
             Text {
-                text: 'Ime kviza: ' + quizzesModel.data(internals.currentQuizIndex)
+                text: quizzesModel.data(internals.currentQuizIndex)
                 font.family: lato.name
                 font.pointSize: 12
                 color: Style.red
@@ -63,26 +63,41 @@ Page {
                 id: menu
                 Layout.fillHeight: true
                 width: 200
-                color: "white"
-                opacity: .8
+                color: Style.whiteOpacity
 
                 TreeView {
                     id: categoriesTreeView
                     model: categoriesModel
-                    anchors.fill: parent
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: contentHeight
                     selectionModel: ItemSelectionModel {
                         id: treeViewSelection
                         model: categoriesModel
-                        /* onSelectionChanged: {
-                            console.log(categoriesModel.data(treeViewSelection.selectedIndexes[0]))
-                        } */
+                        onSelectionChanged: {
+                            var q = categoriesModel.itemData(selectedIndexes[0])
+                            form.setFields(q)
+                        }
                     }
                     delegate: CategoriesTreeViewDelegate {}
+                }
+
+                RoundGradientButton {
+                    id: btnNewCategory
+                    anchors.top: categoriesTreeView.bottom
+                    anchors.right: parent.right
+                    anchors.margins: 10
+                    implicitWidth: 130
+                    implicitHeight: 25
+                    font.pointSize: 10
+                    text: "NOVA KATEGORIJA"
                 }
             }
 
             EditQuestionForm {
                 id: form
+                visible: treeViewSelection.hasSelection
                 Layout.fillHeight: true
                 Layout.fillWidth: true
             }

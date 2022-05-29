@@ -56,7 +56,7 @@ class CategoriesTreeModel(QAbstractItemModel):
             del self.quiz.categories[i]
         self.endRemoveRows()
 
-    @Slot(int, str, result=QModelIndex)
+    @Slot(int, str, result='QModelIndex')
     def getElementIndex(self, _id, _type):
         if _type == "category":
             for i, category in enumerate(self.quiz.categories):
@@ -68,6 +68,18 @@ class CategoriesTreeModel(QAbstractItemModel):
                     if question.id == _id:
                         return self.createIndex(i, 0, question)
         return QModelIndex()
+
+    @Slot(QModelIndex, result='QVariant')
+    def itemData(self, index):
+        item = index.internalPointer()
+        data = {}
+        for role in roles.MAPPINGS:
+            prop = roles.MAPPINGS.get(role)
+            if prop is not None:
+                attr = getattr(item, prop, None)
+                if attr is not None:
+                    data[prop] = attr
+        return data
 
     def index(self, row, column, parent=QModelIndex()):
         if column != 0:

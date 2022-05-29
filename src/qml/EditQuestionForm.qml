@@ -5,6 +5,14 @@ import QtQuick.Layouts
 Rectangle {
     color: "transparent"
 
+    function setFields(q) {
+        // qtypeField.currentIndex = q["qtype"]-1
+        questionField.text = q["question"]
+        nameField.text = q["name"]
+        answerField.text = q["answer"]
+        pointsField.text = q["points"]
+    }
+
     GridLayout {
         readonly property int elementWidth: 300
         columns: Math.max(Math.floor(parent.width / elementWidth), 1)
@@ -17,15 +25,16 @@ Rectangle {
         rowSpacing: 15
         columnSpacing: rowSpacing
 
-        ColumnLayout {
+        /*ColumnLayout {
             Label {
                 text: "Tip pitanja"
             }
             ComboBox {
+                id: qtypeField
                 Layout.fillWidth: true
                 model: ["Tekst", "Slika", "Odabir"]
             }
-        }
+        }*/
 
         ColumnLayout {
             Label {
@@ -37,11 +46,12 @@ Rectangle {
                 // contentWidth: width
                 // contentHeight: textArea.implicitHeight
                 TextArea.flickable: TextArea {
+                    id: questionField
                     wrapMode: Text.WordWrap
                     topPadding: 6
                     bottomPadding: 6
                     leftPadding: 8
-                    rightPadding: 8
+                    rightPadding: 16
                 }
                 ScrollBar.vertical: ScrollBar {}
             }
@@ -49,11 +59,11 @@ Rectangle {
 
         ColumnLayout {
             Label {
-                text: "Kratki opis pitanja  (" + shortCode.length + '/' +
-                shortCode.maximumLength + " znakova)"
+                text: "Kratki opis pitanja  (" + nameField.length + '/' +
+                nameField.maximumLength + " znakova)"
             }
             TextField {
-                id: shortCode
+                id: nameField
                 Layout.fillWidth: true
                 maximumLength: 30
                 topPadding: 6
@@ -68,6 +78,7 @@ Rectangle {
                 text: "Točan odgovor"
             }
             TextField {
+                id: answerField
                 Layout.fillWidth: true
                 topPadding: 6
                 bottomPadding: 6
@@ -81,6 +92,7 @@ Rectangle {
                 text: "Broj bodova"
             }
             TextField {
+                id: pointsField
                 Layout.leftMargin: 10
                 Layout.fillWidth: true
                 topPadding: 6

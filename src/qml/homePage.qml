@@ -75,8 +75,7 @@ Page {
             id: menu
             width: if(root.width >= 828) return 300; else return 0
             height: parent.height
-            color: "white"
-            opacity: .85
+            color: Style.whiteOpacity
             anchors.right: parent.right
 
             PropertyAnimation {
@@ -104,7 +103,7 @@ Page {
 
                         Text {
                             Layout.leftMargin: 10
-                            text: model.name
+                            text: name
                             color: Style.red
                             font.family: lato.name
                             font.pointSize: 12
@@ -116,7 +115,7 @@ Page {
                             Layout.preferredHeight: 40
                             Layout.preferredWidth: 30
                             Layout.alignment: Qt.AlignRight
-                            onClicked: { quizzesModel.play(model.id) }
+                            onClicked: { quizzesModel.play(id) }
                         }
                         IconButton {
                             btnIconSource: "qrc:///assets/icon_edit.svg"
