@@ -19,7 +19,7 @@ Item {
 
     QtObject {
         id: internals
-        property int currentIndex: -1
+        property var currentQuizIndex: null
     }
 
     Component {

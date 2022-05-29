@@ -5,12 +5,17 @@ import QtQuick.Layouts
 Rectangle {
     color: "transparent"
 
-    ColumnLayout {
+    GridLayout {
+        readonly property int elementWidth: 300
+        columns: Math.max(Math.floor(parent.width / elementWidth), 1)
+        rows: Math.max(Math.ceil(children.length / columns), 1)
+
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.margins: 15
-        spacing: 15
+        rowSpacing: 15
+        columnSpacing: rowSpacing
 
         ColumnLayout {
             Label {

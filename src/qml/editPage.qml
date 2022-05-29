@@ -7,12 +7,6 @@ import Qt5Compat.GraphicalEffects
 Page {
     id: editPage
 
-    QtObject {
-        id: data
-       // property var quiz: quizzesModel.data(quizzesModel.index(internals
-       // .currentIndex, 0))
-    }
-
     Rectangle {
         id: root
         anchors.fill: parent
@@ -52,7 +46,7 @@ Page {
             }
 
             Text {
-                text: 'Ime kviza: ' + data.quiz?.name
+                text: 'Ime kviza: ' + quizzesModel.data(internals.currentQuizIndex)
                 font.family: lato.name
                 font.pointSize: 12
                 color: Style.red
@@ -76,26 +70,14 @@ Page {
                     id: categoriesTreeView
                     model: categoriesModel
                     anchors.fill: parent
-                    anchors.bottom: bottomBar.top
-                    delegate: CategoriesTreeViewDelegate {}
-                }
-
-                RowLayout {
-                    id: bottomBar
-                    anchors.bottom: parent.bottom
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.margins: 10
-                    height: 30
-                    Layout.alignment: Qt.AlignVCenter
-
-                    RoundGradientButton {
-                        implicitWidth: 90
-                        implicitHeight: 30
-                        Layout.alignment: Qt.AlignHCenter
-                        // font.pointSize: 10
-                        text: "ISPROBAJ"
+                    selectionModel: ItemSelectionModel {
+                        id: treeViewSelection
+                        model: categoriesModel
+                        /* onSelectionChanged: {
+                            console.log(categoriesModel.data(treeViewSelection.selectedIndexes[0]))
+                        } */
                     }
+                    delegate: CategoriesTreeViewDelegate {}
                 }
             }
 

@@ -116,7 +116,7 @@ class Question:
     name: str
     question: str
     answer: str
-    _type: int
+    qtype: int
     order: str
     points: int
     image: str = ""

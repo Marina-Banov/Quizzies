@@ -2,6 +2,7 @@ from PySide6.QtCore import (
     QAbstractListModel,
     QAbstractItemModel,
     QModelIndex,
+    Qt,
     Slot,
 )
 
@@ -23,7 +24,8 @@ class CategoriesTreeModel(QAbstractItemModel):
     @Slot(int, str)
     def delete(self, _id, _type):
         if self.execute_query(f"DELETE FROM {_type} WHERE id={_id}"):
-            self.removeRow(*self.get_element_index(_id, _type))
+            i = self.getElementIndex(_id, _type)
+            self.removeRow(i.row(), i)
 
     def set_quiz(self, quiz):
         self.quiz = quiz
@@ -54,17 +56,18 @@ class CategoriesTreeModel(QAbstractItemModel):
             del self.quiz.categories[i]
         self.endRemoveRows()
 
-    def get_element_index(self, _id, _type):
+    @Slot(int, str, result=QModelIndex)
+    def getElementIndex(self, _id, _type):
         if _type == "category":
             for i, category in enumerate(self.quiz.categories):
                 if category.id == _id:
-                    return i, self.createIndex(i, 0, category)
+                    return self.createIndex(i, 0, category)
         elif _type == "question":
             for category in self.quiz.categories:
                 for i, question in enumerate(category.questions):
                     if question.id == _id:
-                        return i, self.createIndex(i, 0, question)
-        return -1, QModelIndex()
+                        return self.createIndex(i, 0, question)
+        return QModelIndex()
 
     def index(self, row, column, parent=QModelIndex()):
         if column != 0:
@@ -101,11 +104,14 @@ class CategoriesTreeModel(QAbstractItemModel):
                 return self.createIndex(row, 0, parent_item)
         return QModelIndex()
 
-    def data(self, index, role=roles.NameRole):
+    def data(self, index, role=Qt.DisplayRole):
         if not index.isValid():
             return
 
         item = index.internalPointer()
+
+        if role == Qt.DisplayRole:
+            return item.name
         prop = roles.MAPPINGS.get(role)
         if prop is not None:
             return getattr(item, prop)
@@ -128,11 +134,14 @@ class QuizListModel(QAbstractListModel):
     def rowCount(self, parent=QModelIndex()):
         return len(self._quizzes)
 
-    def data(self, index, role=roles.NameRole):
+    def data(self, index, role=Qt.DisplayRole):
         if not index.isValid():
             return
 
         item = self._quizzes[index.row()]
+
+        if role == Qt.DisplayRole:
+            return item.name
         prop = roles.MAPPINGS.get(role)
         if prop is not None:
             return getattr(item, prop)

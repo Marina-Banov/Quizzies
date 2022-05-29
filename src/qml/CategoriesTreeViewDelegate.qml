@@ -6,10 +6,15 @@ Rectangle {
     id: treeDelegate
     implicitWidth: parent.width
     implicitHeight: 30
-    color: "white"
+    /*
+       TODO why is [0] allowed?
+        Shouldn't this throw an IndexError if selection is empty?
+    */
+    color: treeViewSelection.selectedIndexes[0] == i ? Style.pinkVeryLight : "white"
 
     readonly property real indent: 15
     readonly property real padding: 20
+    readonly property var i: categoriesModel.getElementIndex(model.id, model.type)
 
     // Assigned to by TreeView:
     required property TreeView treeView
@@ -19,7 +24,12 @@ Rectangle {
     required property int depth
 
     TapHandler {
-        onTapped: treeView.toggleExpanded(row)
+        onTapped: {
+            treeView.toggleExpanded(row)
+            if (model.type == "question") {
+                treeViewSelection.select(i, ItemSelectionModel.ClearAndSelect)
+            }
+        }
     }
 
     Text {

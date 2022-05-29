@@ -89,8 +89,10 @@ Page {
             }
 
             ListView {
+                id: quizListView
                 anchors.fill: parent
                 model: quizzesModel
+
                 delegate: Rectangle {
                     color: "white"
                     height: 40
@@ -123,7 +125,7 @@ Page {
                             Layout.alignment: Qt.AlignRight
                             onClicked: {
                                 quizzesModel.details(index)
-                                internals.currentIndex = index
+                                internals.currentQuizIndex = quizzesModel.index(index, 0)
                                 stack.push("editPage.qml")
                             }
                         }
