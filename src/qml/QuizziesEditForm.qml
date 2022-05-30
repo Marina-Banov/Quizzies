@@ -6,17 +6,25 @@ Rectangle {
     color: "transparent"
 
     function setFields(q) {
-        // qtypeField.currentIndex = q["qtype"]-1
-        questionField.text = q["question"]
-        nameField.text = q["name"]
-        answerField.text = q["answer"]
-        pointsField.text = q["points"]
+        // qtypeField.currentIndex = q["qtype"]-1;
+        questionField.text = q["question"];
+        nameField.text = q["name"];
+        answerField.text = q["answer"];
+        pointsField.text = q["points"];
+    }
+
+    function resetForm() {
+        // qtypeField.currentIndex = 0;
+        questionField.text = "";
+        nameField.text = "";
+        answerField.text = "";
+        pointsField.text = "";
     }
 
     GridLayout {
         readonly property int elementWidth: 300
-        columns: Math.max(Math.floor(parent.width / elementWidth), 1)
-        rows: Math.max(Math.ceil(children.length / columns), 1)
+        columns: { Math.max(Math.floor(parent.width / elementWidth), 1) }
+        rows: { Math.max(Math.ceil(children.length / columns), 1) }
 
         anchors.top: parent.top
         anchors.left: parent.left
@@ -43,8 +51,6 @@ Rectangle {
             Flickable {
                 Layout.fillWidth: true
                 height: 80
-                // contentWidth: width
-                // contentHeight: textArea.implicitHeight
                 TextArea.flickable: TextArea {
                     id: questionField
                     wrapMode: Text.WordWrap

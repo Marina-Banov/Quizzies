@@ -34,7 +34,7 @@ Page {
                 icon.source: "qrc:///assets/icon_back.svg"
                 icon.width: 18
                 icon.height: 18
-                onClicked: editPage.StackView.view.pop()
+                onClicked: { editPage.StackView.view.pop() }
             }
 
             Text {
@@ -47,7 +47,7 @@ Page {
 
             EditableText {
                 id: quizNameField
-                textValue: quizzesModel.data(internals.currentQuizIndex)
+                textValue: { quizzesModel.data(internals.currentQuizIndex) }
                 font.family: lato.name
                 font.pointSize: 12
                 color: Style.red
@@ -56,12 +56,10 @@ Page {
                 MouseArea {
                     anchors.fill: parent
                     acceptedButtons: Qt.RightButton
-                    onClicked: function(mouseEvent) {
-                        quizNameField.state = "editing"
-                    }
+                    onClicked: { quizNameField.state = "editing" }
                 }
 
-                function onChangeAccepted() {
+                onChangeAccepted: {
                     quizzesModel.updateQuizName(internals.currentQuizIndex, textValue)
                 }
             }
@@ -90,12 +88,16 @@ Page {
                         id: treeViewSelection
                         model: categoriesModel
                         onSelectionChanged: {
-                            var q = categoriesModel.itemData(selectedIndexes[0])
-                            form.setFields(q)
+                            if (hasSelection) {
+                                var q = categoriesModel.itemData(selectedIndexes[0]);
+                                form.setFields(q);
+                            } else {
+                                form.resetForm();
+                            }
                         }
                     }
                     property var editableCategory: null
-                    delegate: CategoriesTreeViewDelegate {}
+                    delegate: QuizziesTreeViewDelegate {}
                 }
 
                 RoundGradientButton {
@@ -110,7 +112,7 @@ Page {
                 }
             }
 
-            EditQuestionForm {
+            QuizziesEditForm {
                 id: form
                 visible: treeViewSelection.hasSelection
                 Layout.fillHeight: true

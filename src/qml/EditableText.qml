@@ -8,7 +8,8 @@ Text {
     property string textValue
     text: textValue
 
-    function onChangeAccepted() {}
+    signal changeAccepted
+    signal endChange
 
     TextField {
         id: editor
@@ -18,9 +19,12 @@ Text {
         text: textValue
         visible: false
         onAccepted: {
-            textValue = text
-            editableText.state = ""
-            onChangeAccepted()
+            if (text != textValue) {
+                textValue = text;
+                changeAccepted();
+            }
+            editableText.state = "";
+            endChange();
         }
     }
 

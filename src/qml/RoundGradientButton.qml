@@ -3,7 +3,7 @@ import QtQuick.Controls
 
 
 RoundButton {
-    id: button
+    id: roundGradientButton
     implicitWidth: 140; implicitHeight: 40
     font.family: patuaOne.name
     font.pointSize: 12
@@ -15,6 +15,6 @@ RoundButton {
             GradientStop { position: 0; color: Style.pink }
             GradientStop { position: 1; color: Style.orange }
         }
-        opacity: button.pressed ? 1 : .9
+        opacity: roundGradientButton.pressed ? 1 : .9
     }
 }

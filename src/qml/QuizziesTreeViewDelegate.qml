@@ -14,7 +14,7 @@ Rectangle {
 
     readonly property real indent: 15
     readonly property real padding: 20
-    readonly property var i: categoriesModel.getElementIndex(id, type)
+    property var i: { categoriesModel.getElementIndex(id, type) }
 
     // Assigned to by TreeView:
     required property TreeView treeView
@@ -26,15 +26,15 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: function(mouseEvent) {
+        onClicked: (mouseEvent) => {
             if (mouseEvent.button == 1) {
-                treeView.toggleExpanded(row)
+                treeView.toggleExpanded(row);
                 if (type == "question") {
-                    treeViewSelection.select(i, ItemSelectionModel.ClearAndSelect)
+                    treeViewSelection.select(i, ItemSelectionModel.ClearAndSelect);
                 }
-                categoriesTreeView.editableCategory = null
+                categoriesTreeView.editableCategory = null;
             } else if (mouseEvent.button == 2 && type == "category") {
-                categoriesTreeView.editableCategory = i
+                categoriesTreeView.editableCategory = i;
             }
         }
     }
@@ -43,7 +43,6 @@ Rectangle {
         id: indicator
         visible: treeDelegate.isTreeNode && treeDelegate.hasChildren
         x: 8
-        // x: padding + (treeDelegate.depth * treeDelegate.indent)
         anchors.verticalCenter: editableLabel.verticalCenter
         text: "▸"
         font.pointSize: 12
@@ -57,8 +56,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: btnDelete.left
-        anchors.leftMargin: 10 + (treeDelegate.isTreeNode ?
-        (treeDelegate.depth + 1) * treeDelegate.indent : 0)
+        anchors.leftMargin: { 10 + (treeDelegate.isTreeNode ? (treeDelegate.depth + 1) * treeDelegate.indent : 0) }
         verticalAlignment: Text.AlignVCenter
         clip: true
         text: name
@@ -74,20 +72,16 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: btnAdd.left
-        anchors.leftMargin: 10 + (treeDelegate.isTreeNode ? (treeDelegate
-        .depth + 1) * treeDelegate.indent : 0)
+        anchors.leftMargin: label.anchors.leftMargin
         verticalAlignment: Text.AlignVCenter
         clip: true
         textValue: name
         font: label.font
         color: Style.red
         visible: type == "category"
-        state: (categoriesTreeView.editableCategory == i) ? "editing" : ""
-
-        function onChangeAccepted() {
-            categoriesModel.updateCategoryName(i, textValue)
-            categoriesTreeView.editableCategory = null
-        }
+        state: { (categoriesTreeView.editableCategory == i) ? "editing" : "" }
+        onChangeAccepted: { categoriesModel.updateCategoryName(i, textValue) }
+        onEndChange: { categoriesTreeView.editableCategory = null }
     }
 
     IconButton {
@@ -107,12 +101,14 @@ Rectangle {
         height: parent.height
         width: 24
         onClicked: {
-            var d = dialogDelete.createObject(editPage)
-            d.accepted.connect(function(){
-                categoriesModel.delete(id, type)
-            })
-            d.rejected.connect(function(){})
-            d.visible = true
+            var d = dialogDelete.createObject(editPage);
+            d.accepted.connect(() => {
+                if (treeViewSelection.selectedIndexes[0] == i) {
+                    treeViewSelection.clear();
+                }
+                categoriesModel.delete(id, type);
+            });
+            d.visible = 1;
         }
     }
 }
