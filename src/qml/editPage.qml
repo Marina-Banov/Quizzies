@@ -45,11 +45,25 @@ Page {
                 color: Style.redDark
             }
 
-            Text {
-                text: quizzesModel.data(internals.currentQuizIndex)
+            EditableText {
+                id: quizNameField
+                textValue: quizzesModel.data(internals.currentQuizIndex)
                 font.family: lato.name
                 font.pointSize: 12
                 color: Style.red
+                padding: 8
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.RightButton
+                    onClicked: function(mouseEvent) {
+                        quizNameField.state = "editing"
+                    }
+                }
+
+                function onChangeAccepted() {
+                    quizzesModel.updateQuizName(internals.currentQuizIndex, textValue)
+                }
             }
         }
 
@@ -80,6 +94,7 @@ Page {
                             form.setFields(q)
                         }
                     }
+                    property var editableCategory: null
                     delegate: CategoriesTreeViewDelegate {}
                 }
 

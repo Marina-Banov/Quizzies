@@ -45,7 +45,7 @@ class CategoriesTreeModel(QAbstractItemModel):
             return len(self.quiz.categories)
 
     def removeRow(self, i, element=QModelIndex()):  # i == element.row()
-        if i == -1 or not element.isValid():
+        if not element.isValid():
             return
         parent = self.parent(element)
         self.beginRemoveRows(parent, i, i)
@@ -71,8 +71,11 @@ class CategoriesTreeModel(QAbstractItemModel):
 
     @Slot(QModelIndex, result='QVariant')
     def itemData(self, index):
-        item = index.internalPointer()
         data = {}
+        if not index.isValid():
+            return data
+
+        item = index.internalPointer()
         for role in roles.MAPPINGS:
             prop = roles.MAPPINGS.get(role)
             if prop is not None:
@@ -127,6 +130,29 @@ class CategoriesTreeModel(QAbstractItemModel):
         prop = roles.MAPPINGS.get(role)
         if prop is not None:
             return getattr(item, prop)
+
+    def setData(self, index, *args, **kwargs):
+        if not index.isValid():
+            return False
+
+        value, role = args
+        item = index.internalPointer()
+        prop = roles.MAPPINGS.get(role)
+        if prop is not None and getattr(item, prop) is not None:
+            setattr(item, prop, value)
+            self.dataChanged.emit(index, index)
+            return True
+
+        return False
+
+    @Slot(QModelIndex, str)
+    def updateCategoryName(self, index, name):
+        if not index.isValid():
+            return
+
+        _id = self.data(index, roles.IdRole)
+        if self.execute_query(f"UPDATE category SET name='{name}' WHERE id={_id}"):
+            self.setData(index, name, roles.NameRole)
 
 
 class QuizListModel(QAbstractListModel):
@@ -184,3 +210,13 @@ class QuizListModel(QAbstractListModel):
         item = self._quizzes[index]
         if self.execute_query(f"DELETE FROM quiz WHERE id={item.id}"):
             self.removeRow(index)
+
+    @Slot(QModelIndex, str)
+    def updateQuizName(self, index, name):
+        if not index.isValid():
+            return
+
+        item = self._quizzes[index.row()]
+        if self.execute_query(f"UPDATE quiz SET name='{name}' WHERE id={item.id}"):
+            item.name = name
+            self.dataChanged.emit(index, index)

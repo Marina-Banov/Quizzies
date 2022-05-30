@@ -23,11 +23,18 @@ Rectangle {
     required property int hasChildren
     required property int depth
 
-    TapHandler {
-        onTapped: {
-            treeView.toggleExpanded(row)
-            if (type == "question") {
-                treeViewSelection.select(i, ItemSelectionModel.ClearAndSelect)
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        onClicked: function(mouseEvent) {
+            if (mouseEvent.button == 1) {
+                treeView.toggleExpanded(row)
+                if (type == "question") {
+                    treeViewSelection.select(i, ItemSelectionModel.ClearAndSelect)
+                }
+                categoriesTreeView.editableCategory = null
+            } else if (mouseEvent.button == 2 && type == "category") {
+                categoriesTreeView.editableCategory = i
             }
         }
     }
@@ -37,7 +44,7 @@ Rectangle {
         visible: treeDelegate.isTreeNode && treeDelegate.hasChildren
         x: 8
         // x: padding + (treeDelegate.depth * treeDelegate.indent)
-        anchors.verticalCenter: label.verticalCenter
+        anchors.verticalCenter: editableLabel.verticalCenter
         text: "▸"
         font.pointSize: 12
         color: Style.red
@@ -46,18 +53,45 @@ Rectangle {
 
     Text {
         id: label
-        anchors.fill: parent
-        verticalAlignment: Text.AlignVCenter
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: btnDelete.left
         anchors.leftMargin: 10 + (treeDelegate.isTreeNode ?
         (treeDelegate.depth + 1) * treeDelegate.indent : 0)
+        verticalAlignment: Text.AlignVCenter
         clip: true
         text: name
         font.family: lato.name
         font.pointSize: 10
         color: Style.red
+        visible: !editableLabel.visible
+    }
+
+    EditableText {
+        id: editableLabel
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: btnAdd.left
+        anchors.leftMargin: 10 + (treeDelegate.isTreeNode ? (treeDelegate
+        .depth + 1) * treeDelegate.indent : 0)
+        verticalAlignment: Text.AlignVCenter
+        clip: true
+        textValue: name
+        font: label.font
+        color: Style.red
+        visible: type == "category"
+        state: (categoriesTreeView.editableCategory == i) ? "editing" : ""
+
+        function onChangeAccepted() {
+            categoriesModel.updateCategoryName(i, textValue)
+            categoriesTreeView.editableCategory = null
+        }
     }
 
     IconButton {
+        id: btnAdd
         btnIconSource: "qrc:///assets/icon_add.svg"
         anchors.right: btnDelete.left
         height: parent.height
