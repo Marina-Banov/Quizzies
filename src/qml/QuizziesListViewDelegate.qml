@@ -27,7 +27,11 @@ Rectangle {
             Layout.preferredHeight: 40
             Layout.preferredWidth: 30
             Layout.alignment: Qt.AlignRight
-            onClicked: { quizzesModel.play(id) }
+            onClicked: {
+                quizzesModel.details(index);
+                internals.currentQuizIndex = quizzesModel.index(index, 0);
+                stack.push("QuizziesPlayPage.qml");
+            }
         }
 
         IconButton {

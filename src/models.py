@@ -69,6 +69,38 @@ class CategoriesTreeModel(QAbstractItemModel):
                         return self.createIndex(i, 0, question)
         return QModelIndex()
 
+    @Slot(QModelIndex, result='QModelIndex')
+    def prev(self, i):
+        if not i.isValid():
+            return QModelIndex()
+
+        item = i.internalPointer()
+        if isinstance(item, Category):
+            if i.row() == 0:
+                return i
+            p = self.index(i.row()-1, 0)
+            return self.index(self.rowCount(p)-1, 0, p)
+
+        p = self.parent(i)
+        res = self.index(i.row()-1, 0, p)
+        return res if res.isValid() else p
+
+    @Slot(QModelIndex, result='QModelIndex')
+    def next(self, i):
+        if not i.isValid():
+            return QModelIndex()
+
+        item = i.internalPointer()
+        if isinstance(item, Category):
+            return self.index(0, 0, i)
+
+        p = self.parent(i)
+        res = self.index(i.row()+1, 0, p)
+        if res.isValid():
+            return res
+        res = self.index(p.row()+1, 0)
+        return res if res.isValid() else i
+
     @Slot(QModelIndex, result='QVariant')
     def itemData(self, index):
         data = {}

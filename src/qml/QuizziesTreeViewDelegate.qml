@@ -35,6 +35,7 @@ Rectangle {
                 categoriesTreeView.editableCategory = null;
             } else if (mouseEvent.button == 2 && type == "category") {
                 categoriesTreeView.editableCategory = i;
+                // TODO this part is still a little buggy :c
             }
         }
     }
