@@ -45,10 +45,10 @@ class Database:
                     Question(
                         subquery.value("id"),
                         subquery.value("name"),
+                        subquery.value("qtype"),
+                        subquery.value("order"),
                         subquery.value("question"),
                         subquery.value("answer"),
-                        subquery.value("type"),
-                        subquery.value("order"),
                         subquery.value("points"),
                     )
                 )
@@ -117,11 +117,11 @@ class Choice:
 class Question:
     _id: int
     name: str
-    question: str
-    answer: str
     qtype: int
     order: str
-    points: int
+    question: str = ""
+    answer: str = ""
+    points: int = ""
     image: str = ""
     choices: list[Choice] = field(default_factory=list)
     type = "question"

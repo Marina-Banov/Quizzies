@@ -24,6 +24,8 @@ class CategoriesTreeModel(QAbstractItemModel):
 
     @Slot(int, str)
     def delete(self, _id, _type):
+        # TODO could mess up all questions orders...
+        #  maybe remove it from the db?
         if self.execute_query(f"DELETE FROM {_type} WHERE id={_id}"):
             i = self.getElementIndex(_id, _type)
             self.removeRow(i.row(), self.parent(i))
@@ -47,11 +49,13 @@ class CategoriesTreeModel(QAbstractItemModel):
     def insertRow(self, row, parent=QModelIndex(), *args):
         if len(args) == 0:
             return False
-        if not parent.isValid():
-            self.beginInsertRows(QModelIndex(), row, row)
+        self.beginInsertRows(parent, row, row)
+        if parent.isValid():
+            self.quiz.categories[parent.row()].questions.append(args[0])
+        else:
             self.quiz.categories.append(args[0])
-            self.endInsertRows()
-            return True
+        self.endInsertRows()
+        return True
 
     def removeRow(self, row, parent=QModelIndex()):
         self.beginRemoveRows(parent, row, row)
@@ -243,11 +247,27 @@ class CategoriesTreeModel(QAbstractItemModel):
     @Slot(str)
     def createCategory(self, name):
         if self.execute_query(f"INSERT INTO category(name, quiz_id) "
-                              f"VALUES('{name}', {self.quiz.id})"):
+                              f"VALUES ('{name}', {self.quiz.id})"):
             self.insertRow(len(self.quiz.categories), QModelIndex(),
                            Category(self.last_insert_id(), name))
         else:
             print("Failed to execute query")
+
+    @Slot(str, QModelIndex, result='QModelIndex')
+    def createQuestion(self, name, category):
+        row = self.rowCount(category)
+        if self.execute_query(f"INSERT INTO question(name, qtype, 'order') "
+                              f"VALUES ('{name}', 1, '{row+1}')"):
+            q_id = self.last_insert_id()
+            c_id = self.data(category, roles.IdRole)
+            if self.execute_query(f"INSERT INTO category_question( "
+                                  f"category_id, question_id) "
+                                  f"VALUES ({c_id}, {q_id})"):
+                self.insertRow(row, category,
+                               Question(q_id, name, 1, str(row+1)))
+                return self.index(row, 0, category)
+        print("Failed to execute query")
+        return QModelIndex()
 
 
 class QuizListModel(QAbstractListModel):
@@ -301,7 +321,7 @@ class QuizListModel(QAbstractListModel):
 
     @Slot(str, result='bool')
     def create(self, name):
-        if self.execute_query(f"INSERT INTO quiz(name) VALUES('{name}')"):
+        if self.execute_query(f"INSERT INTO quiz(name) VALUES ('{name}')"):
             return self.insertRow(0, QModelIndex(),
                                   Quiz(self.last_insert_id(), name))
         print("Failed to execute query")

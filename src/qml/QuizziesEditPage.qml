@@ -12,6 +12,9 @@ Page {
         anchors.fill: parent
 
         RadialGradient {
+          /* TODO maybe replace with image because of
+               possible dependency issues?
+          */
             id: background
             anchors.fill: root
             gradient: Gradient {
@@ -112,6 +115,7 @@ Page {
                         d.title = "Nova kategorija";
                         d.placeholder = "Ime kategorije";
                         d.accepted.connect(() => {
+                            // TODO bug with the first category
                             categoriesModel.createCategory(d.name)
                         });
                         d.visible = 1;

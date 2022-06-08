@@ -89,7 +89,20 @@ Rectangle {
         height: parent.height
         width: 24
         visible: type == "category"
-        onClicked: {}
+        onClicked: {
+            var d = dialogCreate.createObject(editPage);
+            d.title = "Novo pitanje";
+            // TODO set maximum length limit
+            d.placeholder = "Kratki opis pitanja";
+            d.accepted.connect(() => {
+                var res = categoriesModel.createQuestion(d.name, i);
+                if (res.valid) {
+                    treeView.expand(row);
+                    selection.select(res, ItemSelectionModel.ClearAndSelect);
+                }
+            });
+            d.visible = 1;
+        }
     }
 
     IconButton {
