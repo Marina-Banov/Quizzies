@@ -34,7 +34,7 @@ Page {
                 icon.source: "qrc:///assets/icon_back.svg"
                 icon.width: 18
                 icon.height: 18
-                onClicked: { editPage.StackView.view.pop() }
+                onClicked: { stack.pop() }
             }
 
             Text {
@@ -85,7 +85,7 @@ Page {
                     anchors.right: parent.right
                     height: contentHeight
                     selectionModel: ItemSelectionModel {
-                        id: treeViewSelection
+                        id: selection
                         model: categoriesModel
                         onSelectionChanged: {
                             if (hasSelection) {
@@ -101,7 +101,6 @@ Page {
                 }
 
                 RoundGradientButton {
-                    id: btnNewCategory
                     anchors.top: categoriesTreeView.bottom
                     anchors.right: parent.right
                     anchors.margins: 10
@@ -114,9 +113,7 @@ Page {
 
             QuizziesEditForm {
                 id: form
-                visible: treeViewSelection.hasSelection
-                Layout.fillHeight: true
-                Layout.fillWidth: true
+                visible: selection.hasSelection
             }
         }
     }

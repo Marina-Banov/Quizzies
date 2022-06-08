@@ -26,7 +26,6 @@ Item {
         id: dialogDelete
 
         Dialog {
-            id: dialog
             modal: true
             x: { (parent.width - width) / 2 }
             y: { (parent.height - height) / 2 }
@@ -34,8 +33,8 @@ Item {
             Label { text: "Sigurno želite obrisati ovu stavku?" }
             standardButtons: Dialog.No | Dialog.Yes
             Component.onCompleted: {
-                dialog.standardButton(Dialog.Yes).text = "Da";
-                dialog.standardButton(Dialog.No).text = "Ne";
+                standardButton(Dialog.Yes).text = "Da";
+                standardButton(Dialog.No).text = "Ne";
             }
             onVisibleChanged: { if(!visible) destroy(1) }
         }

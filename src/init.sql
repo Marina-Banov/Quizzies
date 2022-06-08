@@ -52,7 +52,7 @@ INSERT INTO question(question, short_code, answer, type, "order", points) VALUES
     'Blam na Oskarima', 'La La Land', 1, '2', 1
 );
 INSERT INTO question(question, short_code, answer, type, "order", points) VALUES (
-    'Ljudi stvarno svakakvo znaju nazvati određena geografska mjesta, počevši od jezera u Massachusettsu s 45 slova do nekoliko različitih lokacija, rijeka i otoka čije se ime sastoji od samo jednog slova. Koja država ima službeno najduže ime na svijetu sa 56 slova u svome nazivu, a kada skratimo taj naziv dobijemo samo 2 slova?',
+    'Ljudi stvarno svakakvo znaju nazvati određena geografska mjesta, počevši od jezera u Massachusettsu s 45 slova do nekoliko različitih lokacija, rijeka i otoka čije se ime sastoji od samo jednog slova. Koja država ima službeno najduže ime na svijetu s 56 slova u svome nazivu, a kada skratimo taj naziv dobijemo samo 2 slova?',
     'Najdulje ime države', 'United Kingdom of Great Britain and Northern Ireland (U.K.)', 1, '1', 1
 );
 INSERT INTO question(question, short_code, answer, type, "order", points) VALUES (

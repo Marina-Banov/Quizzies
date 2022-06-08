@@ -20,33 +20,31 @@ Page {
             }
         }
 
-        Rectangle {
+        RowLayout {
             id: topBar
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
             height: 60
-            color: "transparent"
 
             RoundGradientButton {
-                id: btnBack
-                anchors.left: parent.left
-                anchors.leftMargin: 20
-                anchors.verticalCenter: parent.verticalCenter
+                Layout.alignment: Qt.AlignLeft
+                Layout.leftMargin: 20
                 implicitWidth: implicitHeight
                 icon.source: "qrc:///assets/icon_back.svg"
                 icon.width: 18
                 icon.height: 18
-                onClicked: { playPage.StackView.view.pop() }
+                onClicked: { stack.pop() }
             }
 
             Text {
-                //anchors.left: btnBack.right
-                //anchors.right: parent.right
-                //anchors.leftMargin: 20
-                //horizontalAlignment: Text.AlignHCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.leftMargin: 20
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.WrapAnywhere
+                maximumLineCount: 1
                 text: { quizzesModel.data(internals.currentQuizIndex) }
                 font.family: patuaOne.name
                 font.pointSize: 24
@@ -55,7 +53,6 @@ Page {
         }
 
         TreeView {
-            id: playTreeView
             model: categoriesModel
             selectionModel: ItemSelectionModel {
                 id: selection
@@ -67,76 +64,78 @@ Page {
             }
         }
 
-        Rectangle {
+        Text {
+            property var model: {
+                if (!selection.hasSelection) return
+                categoriesModel.itemData(selection.selectedIndexes[0])
+            }
             anchors.fill: parent
-            anchors.topMargin: topBar.height
-            anchors.bottomMargin: bottomBar.height
-            color: "transparent"
-            Connections {
-                target: selection
-                function onSelectionChanged() {
-                    var s = selection.selectedIndexes[0];
-                    label.model = categoriesModel.itemData(s)
-                }
+            anchors.margins: 60
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            text: {
+                if (model.type == "category") return "Kategorija " + model.name
+                model.question
             }
-            Text {
-                id: label
-                property var model: null
-                width: parent.width
-                height: parent.height
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                text: model.type + ": " + model.name
-                font.family: lato.name
-                font.pointSize: 14
-                color: Style.red
+            font.family: {
+                if (model.type == "category") return patuaOne.name
+                lato.name
             }
+            font.pointSize: { (model.type == "category") ? 18 : 14 }
+            color: Style.red
+            wrapMode: Text.WordWrap
         }
 
-        Rectangle {
+        RowLayout {
             id: bottomBar
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.leftMargin: 60
-            anchors.rightMargin: 60
             height: 60
-            color: "transparent"
 
-            RoundGradientButton {
-                id: btnPrev
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                implicitWidth: implicitHeight
-                icon.source: "qrc:///assets/icon_back.svg"
-                icon.width: 18
-                icon.height: 18
-                onClicked: {
-                    var i = selection.selectedIndexes[0];
-                    var prev = categoriesModel.prev(i);
-                    if (prev != i)
-                        selection.select(prev, ItemSelectionModel.ClearAndSelect);
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                RoundGradientButton {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    implicitWidth: implicitHeight
+                    icon.source: "qrc:///assets/icon_back.svg"
+                    icon.width: 18
+                    icon.height: 18
+                    onClicked: {
+                        var i = selection.selectedIndexes[0];
+                        var prev = categoriesModel.prev(i);
+                        if (prev != i)
+                            selection.select(prev, ItemSelectionModel.ClearAndSelect);
+                    }
                 }
             }
 
-            RoundGradientButton {
-                id: btnNext
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                implicitWidth: implicitHeight
-                icon.source: "qrc:///assets/icon_back.svg"
-                icon.width: 18
-                icon.height: 18
-                transform: Scale {
-                    xScale: -1
-                    origin.x: btnNext.width/2
-                    origin.y: btnNext.height/2
-                }
-                onClicked: {
-                    var i = selection.selectedIndexes[0];
-                    var next = categoriesModel.next(i);
-                    if (next != i)
-                        selection.select(next, ItemSelectionModel.ClearAndSelect);
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+
+                RoundGradientButton {
+                    id: btnNext
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    implicitWidth: implicitHeight
+                    icon.source: "qrc:///assets/icon_back.svg"
+                    icon.width: 18
+                    icon.height: 18
+                    transform: Scale {
+                        xScale: -1
+                        origin.x: btnNext.width / 2
+                        origin.y: btnNext.height / 2
+                    }
+                    onClicked: {
+                        var i = selection.selectedIndexes[0];
+                        var next = categoriesModel.next(i);
+                        if (next != i)
+                            selection.select(next, ItemSelectionModel.ClearAndSelect);
+                    }
                 }
             }
         }

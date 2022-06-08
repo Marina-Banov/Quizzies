@@ -3,14 +3,13 @@ import QtQuick.Controls
 
 
 Button {
-    id: iconButton
     property url btnIconSource
     flat: true
     down: false
     hoverEnabled: true
     icon.source: btnIconSource
     icon.color: "transparent"
-    icon.width: iconButton.height / 2
-    icon.height: iconButton.height / 2
-    opacity: iconButton.hovered ? 1 : .8
+    icon.width: height / 2
+    icon.height: height / 2
+    opacity: hovered ? 1 : .8
 }

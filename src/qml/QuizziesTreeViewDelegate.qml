@@ -3,14 +3,13 @@ import QtQuick.Controls
 
 
 Rectangle {
-    id: treeDelegate
     implicitWidth: parent.width
     implicitHeight: 30
     /*
        TODO why is [0] allowed?
         Shouldn't this throw an IndexError if selection is empty?
     */
-    color: treeViewSelection.selectedIndexes[0] == i ? Style.pinkVeryLight : "white"
+    color: selection.selectedIndexes[0] == i ? Style.pinkVeryLight : "white"
 
     readonly property real indent: 15
     readonly property real padding: 20
@@ -30,7 +29,7 @@ Rectangle {
             if (mouseEvent.button == 1) {
                 treeView.toggleExpanded(row);
                 if (type == "question") {
-                    treeViewSelection.select(i, ItemSelectionModel.ClearAndSelect);
+                    selection.select(i, ItemSelectionModel.ClearAndSelect);
                 }
                 categoriesTreeView.editableCategory = null;
             } else if (mouseEvent.button == 2 && type == "category") {
@@ -41,14 +40,13 @@ Rectangle {
     }
 
     Text {
-        id: indicator
-        visible: treeDelegate.isTreeNode && treeDelegate.hasChildren
+        visible: isTreeNode && hasChildren
         x: 8
-        anchors.verticalCenter: editableLabel.verticalCenter
+        anchors.verticalCenter: parent.verticalCenter
         text: "▸"
         font.pointSize: 12
         color: Style.red
-        rotation: treeDelegate.expanded ? 90 : 0
+        rotation: expanded ? 90 : 0
     }
 
     Text {
@@ -57,18 +55,17 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: btnDelete.left
-        anchors.leftMargin: { 10 + (treeDelegate.isTreeNode ? (treeDelegate.depth + 1) * treeDelegate.indent : 0) }
+        anchors.leftMargin: { 10 + (isTreeNode ? (depth + 1) * indent : 0) }
         verticalAlignment: Text.AlignVCenter
         clip: true
         text: name
         font.family: lato.name
         font.pointSize: 10
         color: Style.red
-        visible: !editableLabel.visible
+        visible: type != "category"
     }
 
     EditableText {
-        id: editableLabel
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -104,8 +101,8 @@ Rectangle {
         onClicked: {
             var d = dialogDelete.createObject(editPage);
             d.accepted.connect(() => {
-                if (treeViewSelection.selectedIndexes[0] == i) {
-                    treeViewSelection.clear();
+                if (selection.selectedIndexes[0] == i) {
+                    selection.clear();
                 }
                 categoriesModel.delete(id, type);
             });

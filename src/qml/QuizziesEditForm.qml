@@ -2,9 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-Rectangle {
-    color: "transparent"
-
+GridLayout {
     function setFields(q) {
         // qtypeField.currentIndex = q["qtype"]-1;
         questionField.text = q["question"];
@@ -21,96 +19,97 @@ Rectangle {
         pointsField.text = "";
     }
 
-    GridLayout {
-        readonly property int elementWidth: 300
-        columns: { Math.max(Math.floor(parent.width / elementWidth), 1) }
-        rows: { Math.max(Math.ceil(children.length / columns), 1) }
+    readonly property int elementWidth: 300
+    columns: { Math.max(Math.floor((parent.width-30) / elementWidth), 1) }
+    rows: { Math.max(Math.ceil(children.length / columns), 1) }
+    Layout.fillHeight: true
+    Layout.fillWidth: true
+    Layout.margins: 15
+    Layout.alignment: Qt.AlignTop
+    rowSpacing: 15
+    columnSpacing: rowSpacing
 
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.margins: 15
-        rowSpacing: 15
-        columnSpacing: rowSpacing
-
-        /*ColumnLayout {
-            Label {
-                text: "Tip pitanja"
-            }
-            ComboBox {
-                id: qtypeField
-                Layout.fillWidth: true
-                model: ["Tekst", "Slika", "Odabir"]
-            }
-        }*/
-
-        ColumnLayout {
-            Label {
-                text: "Pitanje"
-            }
-            Flickable {
-                Layout.fillWidth: true
-                height: 80
-                TextArea.flickable: TextArea {
-                    id: questionField
-                    wrapMode: Text.WordWrap
-                    topPadding: 6
-                    bottomPadding: 6
-                    leftPadding: 8
-                    rightPadding: 16
-                }
-                ScrollBar.vertical: ScrollBar {}
-            }
+    /*ColumnLayout {
+        Label {
+            text: "Tip pitanja"
         }
+        ComboBox {
+            id: qtypeField
+            Layout.fillWidth: true
+            model: ["Tekst", "Slika", "Odabir"]
+        }
+    }*/
 
-        ColumnLayout {
-            Label {
-                text: "Kratki opis pitanja  (" + nameField.length + '/' +
-                nameField.maximumLength + " znakova)"
-            }
-            TextField {
-                id: nameField
-                Layout.fillWidth: true
-                maximumLength: 30
+    ColumnLayout {
+        Layout.preferredWidth: elementWidth
+        Label {
+            text: "Pitanje"
+        }
+        Flickable {
+            Layout.fillWidth: true
+            height: 80
+            TextArea.flickable: TextArea {
+                id: questionField
+                wrapMode: Text.WordWrap
                 topPadding: 6
                 bottomPadding: 6
                 leftPadding: 8
-                rightPadding: 8
+                rightPadding: 16
             }
+            ScrollBar.vertical: ScrollBar {}
         }
+    }
 
-        ColumnLayout {
-            Label {
-                text: "Točan odgovor"
-            }
-            TextField {
-                id: answerField
-                Layout.fillWidth: true
-                topPadding: 6
-                bottomPadding: 6
-                leftPadding: 8
-                rightPadding: 8
-            }
+    ColumnLayout {
+        Layout.preferredWidth: elementWidth
+        Label {
+            text: "Kratki opis pitanja  (" + nameField.length + '/' +
+            nameField.maximumLength + " znakova)"
         }
+        TextField {
+            id: nameField
+            Layout.fillWidth: true
+            maximumLength: 30
+            topPadding: 6
+            bottomPadding: 6
+            leftPadding: 8
+            rightPadding: 8
+        }
+    }
 
-        RowLayout {
-            Label {
-                text: "Broj bodova"
-            }
-            TextField {
-                id: pointsField
-                Layout.leftMargin: 10
-                Layout.fillWidth: true
-                topPadding: 6
-                bottomPadding: 6
-                leftPadding: 8
-                rightPadding: 8
-                validator: DoubleValidator {
-                    bottom: 0
-                    decimals: 2
-                    notation: DoubleValidator.StandardNotation
-                    locale: "US"  // use decimal point
-                }
+    ColumnLayout {
+        Layout.preferredWidth: elementWidth
+        Label {
+            text: "Točan odgovor"
+        }
+        TextField {
+            id: answerField
+            Layout.fillWidth: true
+            topPadding: 6
+            bottomPadding: 6
+            leftPadding: 8
+            rightPadding: 8
+        }
+    }
+
+    RowLayout {
+        Layout.preferredWidth: elementWidth
+        Label {
+            text: "Broj bodova"
+        }
+        TextField {
+            id: pointsField
+            Layout.leftMargin: 10
+            Layout.fillWidth: true
+            topPadding: 6
+            bottomPadding: 6
+            leftPadding: 8
+            rightPadding: 8
+            validator: DoubleValidator {
+                bottom: 0
+                decimals: 2
+                notation: DoubleValidator.StandardNotation
+                locale: "US"  // use decimal point
             }
         }
     }

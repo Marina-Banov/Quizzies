@@ -52,18 +52,16 @@ Page {
             spacing: 25
 
             RoundGradientButton {
-                id: btnNewQuiz
                 // text: qsTr("NOVI KVIZ")
                 text: "NOVI KVIZ"
                 onClicked: {
                     internals.currentIndex = null;
                     categoriesModel.resetQuiz();
-                    homePage.StackView.view.push("QuizziesEditPage.qml");
+                    stack.push("QuizziesEditPage.qml");
                 }
             }
 
             RoundGradientButton {
-                id: btnOpenQuiz
                 visible: root.width < 828
                 // text: qsTr("ODABERI KVIZ")
                 text: "ODABERI KVIZ"
@@ -88,7 +86,6 @@ Page {
             }
 
             ListView {
-                id: quizListView
                 anchors.fill: parent
                 model: quizzesModel
                 delegate: QuizziesListViewDelegate {}
