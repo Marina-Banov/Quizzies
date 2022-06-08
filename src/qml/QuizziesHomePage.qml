@@ -22,7 +22,6 @@ Page {
             width: 400
             x: 50; y: 90
             wrapMode: Text.WordWrap
-            // text: qsTr("Dobrodošli u Quizzies!")
             text: "Dobrodošli u Quizzies!"
             font.family: patuaOne.name
             font.pointSize: 44
@@ -36,7 +35,6 @@ Page {
             anchors.leftMargin: 5
             anchors.top: textTitle.bottom
             anchors.left: textTitle.left
-            // text: qsTr("Jeste li spremni za dobar provod s prijateljima?\nPokažite tko je među vama uvijek spreman na najteža pitanja i najbolju zabavu!")
             text: "Jeste li spremni za dobar provod s prijateljima?\nPokažite tko među vama zna odgovore na najteža pitanja i zabavite se!"
             font.family: lato.name
             wrapMode: Text.WordWrap
@@ -52,7 +50,6 @@ Page {
             spacing: 25
 
             RoundGradientButton {
-                // text: qsTr("NOVI KVIZ")
                 text: "NOVI KVIZ"
                 onClicked: {
                     var d = dialogCreate.createObject(homePage);
@@ -71,7 +68,6 @@ Page {
 
             RoundGradientButton {
                 visible: root.width < 828
-                // text: qsTr("ODABERI KVIZ")
                 text: "ODABERI KVIZ"
                 onClicked: { animationMenu.running = true }
             }

@@ -29,6 +29,7 @@ def main():
 
     # Expose the data to the QML code
     categories_model = CategoriesTreeModel(db.execute_query,
+                                           db.last_insert_id,
                                            role_names)
     quizzes_model = QuizListModel(quizzes,
                                   db.get_quiz_details,

@@ -14,29 +14,26 @@ import roles
 
 
 class CategoriesTreeModel(QAbstractItemModel):
-    def __init__(self, execute_query, role_names):
+    def __init__(self, execute_query, last_insert_id, role_names):
         super().__init__()
         self.quiz = Quiz()
         self.execute_query = execute_query
+        self.last_insert_id = last_insert_id
         self.roleNames = lambda: role_names
-
-    @Slot()
-    def resetQuiz(self):
-        self.quiz = Quiz()
+        self.columnCount = lambda i: 1
 
     @Slot(int, str)
     def delete(self, _id, _type):
         if self.execute_query(f"DELETE FROM {_type} WHERE id={_id}"):
             i = self.getElementIndex(_id, _type)
-            self.removeRow(i.row(), i)
+            self.removeRow(i.row(), self.parent(i))
+        else:
+            print("Failed to execute query")
 
     def set_quiz(self, quiz):
         self.quiz = quiz
 
-    def columnCount(self, index=QModelIndex()):
-        return 1
-
-    def rowCount(self, parent):
+    def rowCount(self, parent=QModelIndex()):
         if parent.isValid():
             item = parent.internalPointer()
             # if isinstance(item, Quiz):
@@ -47,16 +44,22 @@ class CategoriesTreeModel(QAbstractItemModel):
         else:
             return len(self.quiz.categories)
 
-    def removeRow(self, i, element=QModelIndex()):  # i == element.row()
-        if not element.isValid():
-            return
-        parent = self.parent(element)
-        self.beginRemoveRows(parent, i, i)
-        parent = parent.internalPointer()
-        if isinstance(parent, Category):
-            del parent.questions[i]
+    def insertRow(self, row, parent=QModelIndex(), *args):
+        if len(args) == 0:
+            return False
+        if not parent.isValid():
+            self.beginInsertRows(QModelIndex(), row, row)
+            self.quiz.categories.append(args[0])
+            self.endInsertRows()
+            return True
+
+    def removeRow(self, row, parent=QModelIndex()):
+        self.beginRemoveRows(parent, row, row)
+        if parent.isValid():
+            p = parent.internalPointer()
+            del p.questions[row]
         else:
-            del self.quiz.categories[i]
+            del self.quiz.categories[row]
         self.endRemoveRows()
 
     @Slot(int, str, result='QModelIndex')
@@ -78,14 +81,17 @@ class CategoriesTreeModel(QAbstractItemModel):
             return QModelIndex()
 
         item = i.internalPointer()
+        p = self.parent(i)
         if isinstance(item, Category):
             if i.row() == 0:
                 return i
             p = self.index(i.row() - 1, 0)
-            return self.index(self.rowCount(p) - 1, 0, p)
-
-        p = self.parent(i)
-        res = self.index(i.row() - 1, 0, p)
+            res = self.index(self.rowCount(p) - 1, 0, p)
+            if res.isValid():
+                return res
+            res = p
+        else:
+            res = self.index(i.row() - 1, 0, p)
         return res if res.isValid() else p
 
     @Slot(QModelIndex, result='QModelIndex')
@@ -94,14 +100,17 @@ class CategoriesTreeModel(QAbstractItemModel):
             return QModelIndex()
 
         item = i.internalPointer()
-        if isinstance(item, Category):
-            return self.index(0, 0, i)
-
         p = self.parent(i)
-        res = self.index(i.row() + 1, 0, p)
-        if res.isValid():
-            return res
-        res = self.index(p.row() + 1, 0)
+        if isinstance(item, Category):
+            res = self.index(0, 0, i)
+            if res.isValid():
+                return res
+            res = self.index(i.row() + 1, 0)
+        else:
+            res = self.index(i.row() + 1, 0, p)
+            if res.isValid():
+                return res
+            res = self.index(p.row() + 1, 0)
         return res if res.isValid() else i
 
     @Slot(QModelIndex, result='QVariant')
@@ -134,7 +143,7 @@ class CategoriesTreeModel(QAbstractItemModel):
         else:
             return self.createIndex(row, column, self.quiz.categories[row])
 
-    def parent(self, index):
+    def parent(self, index=QModelIndex()):
         if not index.isValid():
             return QModelIndex()
         item = index.internalPointer()
@@ -181,13 +190,15 @@ class CategoriesTreeModel(QAbstractItemModel):
         return False
 
     @Slot(QModelIndex, str)
-    def updateCategoryName(self, index, name):
+    def updateCategory(self, index, name):
         if not index.isValid():
             return
 
         _id = self.data(index, roles.IdRole)
         if self.execute_query(f"UPDATE category SET name='{name}' WHERE id={_id}"):
             self.setData(index, name, roles.NameRole)
+        else:
+            print("Failed to execute query")
 
     @Slot(QModelIndex, QJSValue)
     def updateQuestion(self, index, data):
@@ -212,7 +223,7 @@ class CategoriesTreeModel(QAbstractItemModel):
             return
 
         query = [f"\"{key}={prop}\"" for key, prop in change]
-        pattern = re.compile(r'[\[\]\\]|\"\'|(?<!\\)\'\"')
+        pattern = re.compile(r'[\[\]\\]|(?<!\\)((\'\")|(\"\'))')
         query = re.sub(pattern, '', str(query))
         _id = self.data(index, roles.IdRole)
         query = f"UPDATE question SET {query} WHERE id={_id}"
@@ -226,6 +237,17 @@ class CategoriesTreeModel(QAbstractItemModel):
                     p if type(p) != str else p[1:-1].replace("''", "'"),
                     roles_keys[roles_values.index(key)]
                 )
+        else:
+            print("Failed to execute query")
+
+    @Slot(str)
+    def createCategory(self, name):
+        if self.execute_query(f"INSERT INTO category(name, quiz_id) "
+                              f"VALUES('{name}', {self.quiz.id})"):
+            self.insertRow(len(self.quiz.categories), QModelIndex(),
+                           Category(self.last_insert_id(), name))
+        else:
+            print("Failed to execute query")
 
 
 class QuizListModel(QAbstractListModel):
@@ -265,9 +287,9 @@ class QuizListModel(QAbstractListModel):
         self.endInsertRows()
         return True
 
-    def removeRow(self, i, parent=QModelIndex()):
-        self.beginRemoveRows(parent, i, i)
-        del self._quizzes[i]
+    def removeRow(self, row, parent=QModelIndex()):
+        self.beginRemoveRows(parent, row, row)
+        del self._quizzes[row]
         self.endRemoveRows()
 
     @Slot(int)

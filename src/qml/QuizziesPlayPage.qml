@@ -74,14 +74,15 @@ Page {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             text: {
+                if (!model) return ""
                 if (model.type == "category") return "Kategorija " + model.name
                 model.order + '. ' + model.question
             }
             font.family: {
-                if (model.type == "category") return patuaOne.name
+                if (model && model.type == "category") return patuaOne.name
                 lato.name
             }
-            font.pointSize: { (model.type == "category") ? 18 : 14 }
+            font.pointSize: { (model && model.type == "category") ? 18 : 14 }
             color: Style.red
             wrapMode: Text.WordWrap
         }

@@ -38,7 +38,6 @@ Page {
             }
 
             Text {
-                // text: qsTr("Uredi kviz")
                 text: "Uredi kviz"
                 font.family: patuaOne.name
                 font.pointSize: 24
@@ -108,6 +107,15 @@ Page {
                     implicitHeight: 25
                     font.pointSize: 10
                     text: "NOVA KATEGORIJA"
+                    onClicked: {
+                        var d = dialogCreate.createObject(editPage);
+                        d.title = "Nova kategorija";
+                        d.placeholder = "Ime kategorije";
+                        d.accepted.connect(() => {
+                            categoriesModel.createCategory(d.name)
+                        });
+                        d.visible = 1;
+                    }
                 }
             }
 

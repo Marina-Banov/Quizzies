@@ -78,7 +78,7 @@ Rectangle {
         color: Style.red
         visible: type == "category"
         state: { (categoriesTreeView.editableCategory == i) ? "editing" : "" }
-        onChangeAccepted: { categoriesModel.updateCategoryName(i, textValue) }
+        onChangeAccepted: { categoriesModel.updateCategory(i, textValue) }
         onEndChange: { categoriesTreeView.editableCategory = null }
     }
 
