@@ -11,6 +11,16 @@ GridLayout {
         pointsField.text = q["points"];
     }
 
+    function getFields() {
+        return {
+            // "qtype": qtypeField.text,
+            "question": questionField.text,
+            "name": nameField.text,
+            "answer": answerField.text,
+            "points": pointsField.text,
+        }
+    }
+
     function resetForm() {
         // qtypeField.currentIndex = 0;
         questionField.text = "";
@@ -24,8 +34,6 @@ GridLayout {
     rows: { Math.max(Math.ceil(children.length / columns), 1) }
     Layout.fillHeight: true
     Layout.fillWidth: true
-    Layout.margins: 15
-    Layout.alignment: Qt.AlignTop
     rowSpacing: 15
     columnSpacing: rowSpacing
 

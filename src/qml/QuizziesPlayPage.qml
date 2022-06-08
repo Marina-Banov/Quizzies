@@ -75,7 +75,7 @@ Page {
             verticalAlignment: Text.AlignVCenter
             text: {
                 if (model.type == "category") return "Kategorija " + model.name
-                model.question
+                model.order + '. ' + model.question
             }
             font.family: {
                 if (model.type == "category") return patuaOne.name

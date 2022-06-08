@@ -41,7 +41,7 @@ class Database:
                 questions.append(
                     Question(
                         subquery.value("id"),
-                        subquery.value("short_code"),
+                        subquery.value("name"),
                         subquery.value("question"),
                         subquery.value("answer"),
                         subquery.value("type"),

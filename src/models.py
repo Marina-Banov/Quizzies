@@ -1,3 +1,5 @@
+import re
+
 from PySide6.QtCore import (
     QAbstractListModel,
     QAbstractItemModel,
@@ -5,6 +7,7 @@ from PySide6.QtCore import (
     Qt,
     Slot,
 )
+from PySide6.QtQml import QJSValue
 
 from data import Question, Category, Quiz
 import roles
@@ -78,11 +81,11 @@ class CategoriesTreeModel(QAbstractItemModel):
         if isinstance(item, Category):
             if i.row() == 0:
                 return i
-            p = self.index(i.row()-1, 0)
-            return self.index(self.rowCount(p)-1, 0, p)
+            p = self.index(i.row() - 1, 0)
+            return self.index(self.rowCount(p) - 1, 0, p)
 
         p = self.parent(i)
-        res = self.index(i.row()-1, 0, p)
+        res = self.index(i.row() - 1, 0, p)
         return res if res.isValid() else p
 
     @Slot(QModelIndex, result='QModelIndex')
@@ -95,10 +98,10 @@ class CategoriesTreeModel(QAbstractItemModel):
             return self.index(0, 0, i)
 
         p = self.parent(i)
-        res = self.index(i.row()+1, 0, p)
+        res = self.index(i.row() + 1, 0, p)
         if res.isValid():
             return res
-        res = self.index(p.row()+1, 0)
+        res = self.index(p.row() + 1, 0)
         return res if res.isValid() else i
 
     @Slot(QModelIndex, result='QVariant')
@@ -185,6 +188,44 @@ class CategoriesTreeModel(QAbstractItemModel):
         _id = self.data(index, roles.IdRole)
         if self.execute_query(f"UPDATE category SET name='{name}' WHERE id={_id}"):
             self.setData(index, name, roles.NameRole)
+
+    @Slot(QModelIndex, QJSValue)
+    def updateQuestion(self, index, data):
+        if not index.isValid():
+            return
+
+        change = []
+        for key, value in self.itemData(index).items():
+            if key == "points":
+                prop = data.property(key).toUInt()
+            else:
+                prop = data.property(key).toString()
+
+            if prop not in ["undefined", value]:
+                if type(prop) == str:
+                    # xss for string with apostrophes prevention
+                    prop = prop.replace("'", "''")
+                    prop = f"'{prop}'"
+                change.append((key, prop))
+
+        if len(change) == 0:
+            return
+
+        query = [f"\"{key}={prop}\"" for key, prop in change]
+        pattern = re.compile(r'[\[\]\\]|\"\'|(?<!\\)\'\"')
+        query = re.sub(pattern, '', str(query))
+        _id = self.data(index, roles.IdRole)
+        query = f"UPDATE question SET {query} WHERE id={_id}"
+
+        if self.execute_query(query):
+            roles_keys = list(roles.MAPPINGS.keys())
+            roles_values = list(roles.MAPPINGS.values())
+            for key, p in change:
+                self.setData(
+                    index,
+                    p if type(p) != str else p[1:-1].replace("''", "'"),
+                    roles_keys[roles_values.index(key)]
+                )
 
 
 class QuizListModel(QAbstractListModel):

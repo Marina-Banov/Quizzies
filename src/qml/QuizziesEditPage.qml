@@ -111,9 +111,23 @@ Page {
                 }
             }
 
-            QuizziesEditForm {
-                id: form
+            ColumnLayout {
                 visible: selection.hasSelection
+                Layout.margins: 15
+                Layout.alignment: Qt.AlignTop
+                spacing: 15
+                QuizziesEditForm { id: form }
+                RoundGradientButton {
+                    Layout.alignment: Qt.AlignRight
+                    implicitWidth: 80
+                    implicitHeight: 25
+                    font.pointSize: 10
+                    text: "SPREMI"
+                    onClicked: {
+                        var i = selection.selectedIndexes[0];
+                        categoriesModel.updateQuestion(i, form.getFields());
+                    }
+                }
             }
         }
     }
