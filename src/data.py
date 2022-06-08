@@ -27,6 +27,9 @@ class Database:
     def execute_query(self, q):
         return self.query.exec_(q)
 
+    def last_insert_id(self):
+        return self.query.lastInsertId()
+
     def get_quiz_details(self, quiz_id):
         self.query.exec_(f"SELECT * FROM category WHERE quiz_id={quiz_id}")
         categories = []

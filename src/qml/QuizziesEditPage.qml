@@ -60,7 +60,7 @@ Page {
                 }
 
                 onChangeAccepted: {
-                    quizzesModel.updateQuizName(internals.currentQuizIndex, textValue)
+                    quizzesModel.update(internals.currentQuizIndex, textValue)
                 }
             }
         }

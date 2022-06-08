@@ -55,9 +55,17 @@ Page {
                 // text: qsTr("NOVI KVIZ")
                 text: "NOVI KVIZ"
                 onClicked: {
-                    internals.currentIndex = null;
-                    categoriesModel.resetQuiz();
-                    stack.push("QuizziesEditPage.qml");
+                    var d = dialogCreate.createObject(homePage);
+                    d.title = "Novi kviz";
+                    d.placeholder = "Ime kviza";
+                    d.accepted.connect(() => {
+                        if (quizzesModel.create(d.name)) {
+                            quizzesModel.details(0);
+                            internals.currentQuizIndex = quizzesModel.index(0,0);
+                            stack.push("QuizziesEditPage.qml");
+                        }
+                    });
+                    d.visible = 1;
                 }
             }
 

@@ -234,16 +234,16 @@ class QuizListModel(QAbstractListModel):
                  get_quiz_details,
                  set_current_quiz,
                  execute_query,
+                 last_insert_id,
                  role_names):
-        QAbstractListModel.__init__(self)
+        super().__init__()
         self._quizzes = quizzes
         self.get_quiz_details = get_quiz_details
         self.set_current_quiz = set_current_quiz
         self.execute_query = execute_query
+        self.last_insert_id = last_insert_id
         self.roleNames = lambda: role_names
-
-    def rowCount(self, parent=QModelIndex()):
-        return len(self._quizzes)
+        self.rowCount = lambda p: len(self._quizzes)
 
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid():
@@ -257,19 +257,18 @@ class QuizListModel(QAbstractListModel):
         if prop is not None:
             return getattr(item, prop)
 
-    def add_row(self, q):
-        self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())
-        self._quizzes.append(q)
+    def insertRow(self, row, parent=QModelIndex(), *args):
+        if len(args) == 0:
+            return False
+        self.beginInsertRows(QModelIndex(), row, row)
+        self._quizzes.insert(row, args[0])
         self.endInsertRows()
+        return True
 
     def removeRow(self, i, parent=QModelIndex()):
         self.beginRemoveRows(parent, i, i)
         del self._quizzes[i]
         self.endRemoveRows()
-
-    @Slot(int)
-    def play(self, _id):
-        print("Play:", _id)
 
     @Slot(int)
     def details(self, index):
@@ -278,14 +277,15 @@ class QuizListModel(QAbstractListModel):
         item.categories = categories
         self.set_current_quiz(item)
 
-    @Slot(int)
-    def delete(self, index):
-        item = self._quizzes[index]
-        if self.execute_query(f"DELETE FROM quiz WHERE id={item.id}"):
-            self.removeRow(index)
+    @Slot(str, result='bool')
+    def create(self, name):
+        if self.execute_query(f"INSERT INTO quiz(name) VALUES('{name}')"):
+            return self.insertRow(0, QModelIndex(),
+                                  Quiz(self.last_insert_id(), name))
+        print("Failed to execute query")
 
     @Slot(QModelIndex, str)
-    def updateQuizName(self, index, name):
+    def update(self, index, name):
         if not index.isValid():
             return
 
@@ -293,3 +293,13 @@ class QuizListModel(QAbstractListModel):
         if self.execute_query(f"UPDATE quiz SET name='{name}' WHERE id={item.id}"):
             item.name = name
             self.dataChanged.emit(index, index)
+        else:
+            print("Failed to execute query")
+
+    @Slot(int)
+    def delete(self, index):
+        item = self._quizzes[index]
+        if self.execute_query(f"DELETE FROM quiz WHERE id={item.id}"):
+            self.removeRow(index)
+        else:
+            print("Failed to execute query")

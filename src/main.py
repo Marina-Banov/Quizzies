@@ -34,6 +34,7 @@ def main():
                                   db.get_quiz_details,
                                   categories_model.set_quiz,
                                   db.execute_query,
+                                  db.last_insert_id,
                                   role_names)
     rc = window.rootContext()
     rc.setContextProperty("quizzesModel", quizzes_model)

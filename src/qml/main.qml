@@ -23,6 +23,31 @@ Item {
     }
 
     Component {
+        id: dialogCreate
+
+        Dialog {
+            modal: true
+            property alias name: nameField.text
+            property alias placeholder: nameField.placeholderText
+            x: { (parent.width - width) / 2 }
+            y: { (parent.height - height) / 2 }
+            standardButtons: Dialog.Ok | Dialog.Cancel
+            TextField {
+                id: nameField
+                topPadding: 6
+                bottomPadding: 6
+                leftPadding: 8
+                rightPadding: 8
+                width: parent.width
+            }
+            Component.onCompleted: {
+                standardButton(Dialog.Cancel).text = "Odustani";
+            }
+            onVisibleChanged: { if(!visible) destroy(1) }
+        }
+    }
+
+    Component {
         id: dialogDelete
 
         Dialog {
