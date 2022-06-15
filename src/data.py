@@ -46,7 +46,6 @@ class Database:
                         subquery.value("id"),
                         subquery.value("name"),
                         subquery.value("qtype"),
-                        subquery.value("order"),
                         subquery.value("question"),
                         subquery.value("answer"),
                         subquery.value("points"),
@@ -119,7 +118,6 @@ class Question:
     _id: int
     name: str
     qtype: int
-    order: str
     question: str = ""
     answer: str = ""
     points: int = ""

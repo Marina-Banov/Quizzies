@@ -22,12 +22,11 @@ class CategoriesTreeModel(QAbstractItemModel):
         self.roleNames = lambda: role_names
         self.columnCount = lambda i: 1
 
-    @Slot(int, str)
-    def delete(self, _id, _type):
-        # TODO could mess up all questions orders...
-        #  maybe remove it from the db?
-        if self.execute_query(f"DELETE FROM {_type} WHERE id={_id}"):
-            i = self.getElementIndex(_id, _type)
+    @Slot(QModelIndex)
+    def delete(self, i):
+        data = self.itemData(i)
+        if self.execute_query(f"DELETE FROM {data['type']} WHERE id="
+                              f"{data['id']}"):
             self.removeRow(i.row(), self.parent(i))
         else:
             print("Failed to execute query")
@@ -65,19 +64,6 @@ class CategoriesTreeModel(QAbstractItemModel):
         else:
             del self.quiz.categories[row]
         self.endRemoveRows()
-
-    @Slot(int, str, result='QModelIndex')
-    def getElementIndex(self, _id, _type):
-        if _type == "category":
-            for i, category in enumerate(self.quiz.categories):
-                if category.id == _id:
-                    return self.createIndex(i, 0, category)
-        elif _type == "question":
-            for category in self.quiz.categories:
-                for i, question in enumerate(category.questions):
-                    if question.id == _id:
-                        return self.createIndex(i, 0, question)
-        return QModelIndex()
 
     @Slot(QModelIndex, result='QModelIndex')
     def prev(self, i):
@@ -175,6 +161,8 @@ class CategoriesTreeModel(QAbstractItemModel):
 
         if role == Qt.DisplayRole:
             return item.name
+        if role == roles.ModelIndexRole:
+            return index
         prop = roles.MAPPINGS.get(role)
         if prop is not None:
             return getattr(item, prop)
@@ -256,15 +244,14 @@ class CategoriesTreeModel(QAbstractItemModel):
     @Slot(str, QModelIndex, result='QModelIndex')
     def createQuestion(self, name, category):
         row = self.rowCount(category)
-        if self.execute_query(f"INSERT INTO question(name, qtype, 'order') "
-                              f"VALUES ('{name}', 1, '{row+1}')"):
+        if self.execute_query(f"INSERT INTO question(name, qtype) "
+                              f"VALUES ('{name}', 1)"):
             q_id = self.last_insert_id()
             c_id = self.data(category, roles.IdRole)
             if self.execute_query(f"INSERT INTO category_question( "
                                   f"category_id, question_id) "
                                   f"VALUES ({c_id}, {q_id})"):
-                self.insertRow(row, category,
-                               Question(q_id, name, 1, str(row+1)))
+                self.insertRow(row, category, Question(q_id, name, 1))
                 return self.index(row, 0, category)
         print("Failed to execute query")
         return QModelIndex()

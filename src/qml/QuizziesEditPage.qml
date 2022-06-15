@@ -31,7 +31,11 @@ Page {
                 icon.source: "qrc:///assets/icon_back.svg"
                 icon.width: 18
                 icon.height: 18
-                onClicked: { stack.pop() }
+                onClicked: {
+                    selection.clear();
+                    internals.currentQuizIndex = null;
+                    stack.pop();
+                }
             }
 
             Text {
@@ -43,7 +47,11 @@ Page {
 
             EditableText {
                 id: quizNameField
-                textValue: { quizzesModel.data(internals.currentQuizIndex) }
+                textValue: {
+                    if (internals.currentQuizIndex)
+                        return quizzesModel.data(internals.currentQuizIndex)
+                    ""
+                }
                 font.family: lato.name
                 font.pointSize: 12
                 color: Style.red

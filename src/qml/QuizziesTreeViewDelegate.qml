@@ -9,11 +9,10 @@ Rectangle {
        TODO why is [0] allowed?
         Shouldn't this throw an IndexError if selection is empty?
     */
-    color: selection.selectedIndexes[0] == i ? Style.pinkLight : "white"
+    color: selection.selectedIndexes[0] == modelIndex ? Style.pinkLight : "white"
 
     readonly property real indent: 15
     readonly property real padding: 20
-    property var i: { categoriesModel.getElementIndex(id, type) }
 
     // Assigned to by TreeView:
     required property TreeView treeView
@@ -29,11 +28,11 @@ Rectangle {
             if (mouseEvent.button == 1) {
                 treeView.toggleExpanded(row);
                 if (type == "question") {
-                    selection.select(i, ItemSelectionModel.ClearAndSelect);
+                    selection.select(modelIndex, ItemSelectionModel.ClearAndSelect);
                 }
                 categoriesTreeView.editableCategory = null;
             } else if (mouseEvent.button == 2 && type == "category") {
-                categoriesTreeView.editableCategory = i;
+                categoriesTreeView.editableCategory = modelIndex;
                 // TODO this part is still a little buggy :c
             }
         }
@@ -77,8 +76,8 @@ Rectangle {
         font: label.font
         color: Style.red
         visible: type == "category"
-        editingState.when: { categoriesTreeView.editableCategory == i }
-        onChangeAccepted: { categoriesModel.updateCategory(i, textValue) }
+        editingState.when: { categoriesTreeView.editableCategory == modelIndex }
+        onChangeAccepted: { categoriesModel.updateCategory(modelIndex, textValue) }
         onEndChange: { categoriesTreeView.editableCategory = null }
     }
 
@@ -99,7 +98,7 @@ Rectangle {
             })
             d.nameField.textEdited();
             d.accepted.connect(() => {
-                var res = categoriesModel.createQuestion(d.nameField.text, i);
+                var res = categoriesModel.createQuestion(d.nameField.text, modelIndex);
                 if (res.valid) {
                     treeView.expand(row);
                     selection.select(res, ItemSelectionModel.ClearAndSelect);
@@ -118,10 +117,11 @@ Rectangle {
         onClicked: {
             var d = dialogDelete.createObject(editPage);
             d.accepted.connect(() => {
-                if (selection.selectedIndexes[0] == i) {
+                if (selection.selectedIndexes[0] == modelIndex) {
                     selection.clear();
                 }
-                categoriesModel.delete(id, type);
+                categoriesModel.delete(modelIndex);
+                // TODO crashes if triggered after play page
             });
             d.visible = 1;
         }

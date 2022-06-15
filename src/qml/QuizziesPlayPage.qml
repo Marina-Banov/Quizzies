@@ -31,18 +31,27 @@ Page {
                 icon.source: "qrc:///assets/icon_back.svg"
                 icon.width: 18
                 icon.height: 18
-                onClicked: { stack.pop() }
+                onClicked: {
+                    selection.clear();
+                    internals.currentQuizIndex = null;
+                    stack.pop();
+                }
             }
 
             Text {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.leftMargin: 20
+                Layout.rightMargin: 80
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 wrapMode: Text.WrapAnywhere
                 maximumLineCount: 1
-                text: { quizzesModel.data(internals.currentQuizIndex) }
+                text: {
+                    if (internals.currentQuizIndex)
+                        return quizzesModel.data(internals.currentQuizIndex)
+                    ""
+                }
                 font.family: merriweather.name
                 font.pointSize: 20
                 color: Style.redDark
@@ -73,8 +82,7 @@ Page {
             text: {
                 if (!model) return ""
                 if (model.type == "category") return "Kategorija " + model.name
-                // TODO maybe delete 'order' field from db? replace with row i
-                model.order + '. ' + model.question
+                selection.selectedIndexes[0].row+1 + '. ' + model.question
             }
             font.family: {
                 if (model && model.type == "category") return merriweather.name
