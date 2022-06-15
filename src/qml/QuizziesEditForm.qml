@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+
 GridLayout {
     function setFields(q) {
         // qtypeField.currentIndex = q["qtype"]-1;
@@ -71,8 +72,8 @@ GridLayout {
     ColumnLayout {
         Layout.preferredWidth: elementWidth
         Label {
-            text: "Kratki opis pitanja  (" + nameField.length + '/' +
-            nameField.maximumLength + " znakova)"
+            property string t: "Kratki opis pitanja (%1/%2 znakova)"
+            text: { t.arg(nameField.length).arg(nameField.maximumLength) }
         }
         TextField {
             id: nameField

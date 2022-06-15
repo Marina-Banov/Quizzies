@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
+import QtQuick.Layouts
 import "."
 
 
@@ -27,20 +28,28 @@ Item {
         id: dialogCreate
 
         Dialog {
+            property alias label: label
+            property alias nameField: nameField
+
+            width: 180
             modal: true
-            property alias name: nameField.text
-            property alias placeholder: nameField.placeholderText
             x: { (parent.width - width) / 2 }
             y: { (parent.height - height) / 2 }
             standardButtons: Dialog.Ok | Dialog.Cancel
-            TextField {
-                id: nameField
-                topPadding: 6
-                bottomPadding: 6
-                leftPadding: 8
-                rightPadding: 8
-                width: parent.width
+
+            ColumnLayout {
+                anchors.fill: parent
+                Label { id: label }
+                TextField {
+                    id: nameField
+                    topPadding: 6
+                    bottomPadding: 6
+                    leftPadding: 8
+                    rightPadding: 8
+                    Layout.fillWidth: true
+                }
             }
+
             Component.onCompleted: {
                 standardButton(Dialog.Cancel).text = "Odustani";
             }

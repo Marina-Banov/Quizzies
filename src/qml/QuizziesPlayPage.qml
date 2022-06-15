@@ -73,6 +73,7 @@ Page {
             text: {
                 if (!model) return ""
                 if (model.type == "category") return "Kategorija " + model.name
+                // TODO maybe delete 'order' field from db? replace with row i
                 model.order + '. ' + model.question
             }
             font.family: {

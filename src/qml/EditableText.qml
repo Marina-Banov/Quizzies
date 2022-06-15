@@ -6,6 +6,7 @@ Text {
     id: editableText
 
     property string textValue
+    property alias editingState: editingState
     text: textValue
 
     signal changeAccepted
@@ -23,24 +24,22 @@ Text {
                 textValue = text;
                 changeAccepted();
             }
-            editableText.state = "";
+            editingState.when = 0;
             endChange();
         }
     }
 
-    states: [
-        State {
-            name: "editing"
-            PropertyChanges {
-                target: editor
-                focus: true
-                visible: true
-            }
-            PropertyChanges {
-                target: editableText
-                explicit: true
-                restoreEntryValues: false
-            }
+    states: State {
+        id: editingState
+        PropertyChanges {
+            target: editor
+            focus: true
+            visible: true
         }
-    ]
+        PropertyChanges {
+            target: editableText
+            explicit: true
+            restoreEntryValues: false
+        }
+    }
 }

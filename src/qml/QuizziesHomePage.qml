@@ -54,9 +54,9 @@ Page {
                 onClicked: {
                     var d = dialogCreate.createObject(homePage);
                     d.title = "Novi kviz";
-                    d.placeholder = "Ime kviza";
+                    d.label.text = "Ime kviza";
                     d.accepted.connect(() => {
-                        if (quizzesModel.create(d.name)) {
+                        if (quizzesModel.create(d.nameField.text)) {
                             quizzesModel.details(0);
                             internals.currentQuizIndex = quizzesModel.index(0,0);
                             stack.push("QuizziesEditPage.qml");

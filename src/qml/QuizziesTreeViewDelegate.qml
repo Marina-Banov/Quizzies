@@ -77,7 +77,7 @@ Rectangle {
         font: label.font
         color: Style.red
         visible: type == "category"
-        state: { (categoriesTreeView.editableCategory == i) ? "editing" : "" }
+        editingState.when: { categoriesTreeView.editableCategory == i }
         onChangeAccepted: { categoriesModel.updateCategory(i, textValue) }
         onEndChange: { categoriesTreeView.editableCategory = null }
     }
@@ -92,10 +92,14 @@ Rectangle {
         onClicked: {
             var d = dialogCreate.createObject(editPage);
             d.title = "Novo pitanje";
-            // TODO set maximum length limit
-            d.placeholder = "Kratki opis pitanja";
+            d.nameField.maximumLength = 30;
+            d.nameField.textEdited.connect(() => {
+                d.label.text = "Kratki opis pitanja (%1/%2)"
+                    .arg(d.nameField.length).arg(30);
+            })
+            d.nameField.textEdited();
             d.accepted.connect(() => {
-                var res = categoriesModel.createQuestion(d.name, i);
+                var res = categoriesModel.createQuestion(d.nameField.text, i);
                 if (res.valid) {
                     treeView.expand(row);
                     selection.select(res, ItemSelectionModel.ClearAndSelect);

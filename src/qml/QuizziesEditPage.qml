@@ -52,7 +52,7 @@ Page {
                 MouseArea {
                     anchors.fill: parent
                     acceptedButtons: Qt.RightButton
-                    onClicked: { quizNameField.state = "editing" }
+                    onClicked: { quizNameField.editingState.when = true }
                 }
 
                 onChangeAccepted: {
@@ -107,10 +107,10 @@ Page {
                     onClicked: {
                         var d = dialogCreate.createObject(editPage);
                         d.title = "Nova kategorija";
-                        d.placeholder = "Ime kategorije";
+                        d.label.text = "Ime kategorije";
                         d.accepted.connect(() => {
                             // TODO bug with the first category
-                            categoriesModel.createCategory(d.name)
+                            categoriesModel.createCategory(d.nameField.text)
                         });
                         d.visible = 1;
                     }
