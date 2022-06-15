@@ -39,9 +39,7 @@ GridLayout {
     columnSpacing: rowSpacing
 
     /*ColumnLayout {
-        Label {
-            text: "Tip pitanja"
-        }
+        Label { text: "Tip pitanja" }
         ComboBox {
             id: qtypeField
             Layout.fillWidth: true
@@ -51,9 +49,7 @@ GridLayout {
 
     ColumnLayout {
         Layout.preferredWidth: elementWidth
-        Label {
-            text: "Pitanje"
-        }
+        Label { text: "Pitanje" }
         Flickable {
             Layout.fillWidth: true
             height: 80
@@ -88,9 +84,7 @@ GridLayout {
 
     ColumnLayout {
         Layout.preferredWidth: elementWidth
-        Label {
-            text: "Točan odgovor"
-        }
+        Label { text: "Točan odgovor" }
         TextField {
             id: answerField
             Layout.fillWidth: true
@@ -103,9 +97,7 @@ GridLayout {
 
     RowLayout {
         Layout.preferredWidth: elementWidth
-        Label {
-            text: "Broj bodova"
-        }
+        Label { text: "Broj bodova" }
         TextField {
             id: pointsField
             Layout.leftMargin: 10

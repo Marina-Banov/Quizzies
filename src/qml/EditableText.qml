@@ -6,12 +6,10 @@ Text {
     id: editableText
 
     property string textValue
-    property alias editingState: editingState
     text: textValue
 
     signal changeAccepted
     signal endChange
-
     TextField {
         id: editor
         verticalAlignment: Text.AlignVCenter
@@ -29,6 +27,7 @@ Text {
         }
     }
 
+    property alias editingState: editingState
     states: State {
         id: editingState
         PropertyChanges {

@@ -36,8 +36,8 @@ Page {
 
             Text {
                 text: "Uredi kviz"
-                font.family: patuaOne.name
-                font.pointSize: 24
+                font.family: merriweather.name
+                font.pointSize: 20
                 color: Style.redDark
             }
 

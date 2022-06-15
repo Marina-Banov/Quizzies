@@ -43,8 +43,8 @@ Page {
                 wrapMode: Text.WrapAnywhere
                 maximumLineCount: 1
                 text: { quizzesModel.data(internals.currentQuizIndex) }
-                font.family: patuaOne.name
-                font.pointSize: 24
+                font.family: merriweather.name
+                font.pointSize: 20
                 color: Style.redDark
             }
         }
@@ -77,10 +77,10 @@ Page {
                 model.order + '. ' + model.question
             }
             font.family: {
-                if (model && model.type == "category") return patuaOne.name
+                if (model && model.type == "category") return merriweather.name
                 lato.name
             }
-            font.pointSize: { (model && model.type == "category") ? 18 : 14 }
+            font.pointSize: { (model && model.type == "category") ? 16 : 14 }
             color: Style.red
             wrapMode: Text.WordWrap
         }

@@ -23,8 +23,8 @@ Page {
             x: 50; y: 90
             wrapMode: Text.WordWrap
             text: "Dobrodošli u Quizzies!"
-            font.family: patuaOne.name
-            font.pointSize: 44
+            font.family: merriweather.name
+            font.pointSize: 38
             color: Style.redDark
         }
 

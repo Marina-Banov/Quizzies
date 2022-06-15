@@ -4,8 +4,8 @@ import QtQuick.Controls
 
 RoundButton {
     implicitWidth: 140; implicitHeight: 40
-    font.family: patuaOne.name
-    font.pointSize: 12
+    font.family: merriweather.name
+    font.pointSize: 11
     palette.buttonText: "white"
 
     background: Rectangle {

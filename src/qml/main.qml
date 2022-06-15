@@ -9,9 +9,8 @@ Item {
     width: 600; height: 500
 
     FontLoader {
-        // TODO find a new font that supports čžšđć
-        id: patuaOne
-        source: "qrc:///assets/PatuaOne-Regular.ttf"
+        id: merriweather
+        source: "qrc:///assets/Merriweather-Black.ttf"
     }
 
     FontLoader {
@@ -28,15 +27,13 @@ Item {
         id: dialogCreate
 
         Dialog {
-            property alias label: label
-            property alias nameField: nameField
-
-            width: 180
             modal: true
             x: { (parent.width - width) / 2 }
             y: { (parent.height - height) / 2 }
-            standardButtons: Dialog.Ok | Dialog.Cancel
+            width: 180
 
+            property alias label: label
+            property alias nameField: nameField
             ColumnLayout {
                 anchors.fill: parent
                 Label { id: label }
@@ -50,6 +47,7 @@ Item {
                 }
             }
 
+            standardButtons: Dialog.Ok | Dialog.Cancel
             Component.onCompleted: {
                 standardButton(Dialog.Cancel).text = "Odustani";
             }
