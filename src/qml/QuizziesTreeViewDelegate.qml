@@ -9,7 +9,7 @@ Rectangle {
        TODO why is [0] allowed?
         Shouldn't this throw an IndexError if selection is empty?
     */
-    color: selection.selectedIndexes[0] == i ? Style.pinkVeryLight : "white"
+    color: selection.selectedIndexes[0] == i ? Style.pinkLight : "white"
 
     readonly property real indent: 15
     readonly property real padding: 20

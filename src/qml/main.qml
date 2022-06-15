@@ -8,6 +8,7 @@ Item {
     width: 600; height: 500
 
     FontLoader {
+        // TODO find a new font that supports čžšđć
         id: patuaOne
         source: "qrc:///assets/PatuaOne-Regular.ttf"
     }

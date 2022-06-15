@@ -69,6 +69,7 @@ class Database:
             print("Failed to create writable directory")
 
         # Ensure that we have a writable location on all devices.
+        # TODO path issue?
         abs_path = write_dir.absolutePath()
         filename = f"{abs_path}/db.sqlite3"
 

@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 
 
 Page {
@@ -11,16 +10,11 @@ Page {
         id: root
         anchors.fill: parent
 
-        RadialGradient {
-          /* TODO maybe replace with image because of
-               possible dependency issues?
-          */
+        Image {
             id: background
+            fillMode: Image.PreserveAspectCrop
             anchors.fill: root
-            gradient: Gradient {
-                GradientStop { position: .2; color: Style.pinkVeryLight }
-                GradientStop { position: .75; color: Style.pinkLight }
-            }
+            source: "qrc:///assets/bg2.png"
         }
 
         RowLayout {
