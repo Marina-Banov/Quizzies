@@ -8,7 +8,7 @@ Requirements:
 - [Python 3.9](https://www.python.org/downloads/release/python-396/)
 - [Qt 6.2.3](https://www.qt.io/download-qt-installer)
 
-Note: you might want to initialize a Python [virtual environment](https://docs.python.org/3/tutorial/venv.html).
+**Note:** you might want to initialize a Python [virtual environment](https://docs.python.org/3/tutorial/venv.html).
 
 To start the application, position yourself inside the `src/` folder and run:
 ```

@@ -88,6 +88,7 @@ Page {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: contentHeight
+                    contentWidth: menu.width
                     selectionModel: ItemSelectionModel {
                         id: selection
                         model: categoriesModel
@@ -117,7 +118,6 @@ Page {
                         d.title = "Nova kategorija";
                         d.label.text = "Ime kategorije";
                         d.accepted.connect(() => {
-                            // TODO bug with the first category
                             categoriesModel.createCategory(d.nameField.text)
                         });
                         d.visible = 1;

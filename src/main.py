@@ -52,7 +52,7 @@ def main():
 
     # Execute and cleanup
     app.exec()
-    del window
+    del window, app
 
 
 if __name__ == "__main__":

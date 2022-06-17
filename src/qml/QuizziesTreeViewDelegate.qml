@@ -5,11 +5,11 @@ import QtQuick.Controls
 Rectangle {
     implicitWidth: parent.width
     implicitHeight: 30
-    /*
-       TODO why is [0] allowed?
-        Shouldn't this throw an IndexError if selection is empty?
-    */
-    color: selection.selectedIndexes[0] == modelIndex ? Style.pinkLight : "white"
+    color: {
+        if (selection.hasSelection && selection.selectedIndexes[0] == modelIndex)
+            return Style.pinkLight
+        "white"
+    }
 
     readonly property real indent: 15
     readonly property real padding: 20
