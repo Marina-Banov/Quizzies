@@ -1,5 +1,6 @@
-from dataclasses import dataclass, field
+import os
 import re
+from dataclasses import dataclass, field
 
 from PySide6.QtCore import QDir, QFile, QIODevice, QTextStream
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
@@ -63,12 +64,12 @@ class Database:
             if not self.database.isValid():
                 print("Cannot add database")
 
-        write_dir = QDir("")
+        abs_path = os.path.realpath(__file__)
+        write_dir = QDir("\\".join(abs_path.split('\\')[:-1]))
         if not write_dir.mkpath("."):
             print("Failed to create writable directory")
 
         # Ensure that we have a writable location on all devices.
-        # TODO path issue?
         abs_path = write_dir.absolutePath()
         filename = f"{abs_path}/db.sqlite3"
 
