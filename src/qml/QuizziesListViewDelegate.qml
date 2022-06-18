@@ -4,7 +4,6 @@ import QtQuick.Layouts
 
 
 Rectangle {
-    color: "white"
     height: 40
     width: menu.width
 

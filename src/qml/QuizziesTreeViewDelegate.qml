@@ -29,6 +29,8 @@ Rectangle {
                 treeView.toggleExpanded(row);
                 if (type == "question") {
                     selection.select(modelIndex, ItemSelectionModel.ClearAndSelect);
+                    var q = categoriesModel.itemData(modelIndex);
+                    form.setFields(q);
                 }
                 categoriesTreeView.editableCategory = null;
             } else if (mouseEvent.button == 2 && type == "category") {
@@ -102,6 +104,8 @@ Rectangle {
                 if (res.valid) {
                     treeView.expand(row);
                     selection.select(res, ItemSelectionModel.ClearAndSelect);
+                    var q = categoriesModel.itemData(res);
+                    form.setFields(q);
                 }
             });
             d.visible = 1;
@@ -119,9 +123,9 @@ Rectangle {
             d.accepted.connect(() => {
                 if (selection.selectedIndexes[0] == modelIndex) {
                     selection.clear();
+                    form.resetForm();
                 }
                 categoriesModel.delete(modelIndex);
-                // TODO crashes if triggered after play page
             });
             d.visible = 1;
         }

@@ -33,6 +33,7 @@ Page {
                 icon.height: 18
                 onClicked: {
                     selection.clear();
+                    form.resetForm();
                     internals.currentQuizIndex = null;
                     stack.pop();
                 }
@@ -92,14 +93,6 @@ Page {
                     selectionModel: ItemSelectionModel {
                         id: selection
                         model: categoriesModel
-                        onSelectionChanged: {
-                            if (hasSelection) {
-                                var q = categoriesModel.itemData(selectedIndexes[0]);
-                                form.setFields(q);
-                            } else {
-                                form.resetForm();
-                            }
-                        }
                     }
                     property var editableCategory: null
                     delegate: QuizziesTreeViewDelegate {}
