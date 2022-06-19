@@ -53,6 +53,7 @@ Starting the app will initialize the connection to an SQLite database by opening
 The app uses the [Qt SQL module](https://doc.qt.io/qt-6/qtsql-index.html), specifically the SQL API Layer to interact with the database.
 
 Database schema:
+
 ![Database schema](images/db2.png "Database schema")
 
 ### The models (Model/View Architecture)
@@ -69,12 +70,15 @@ Two models are implemented in the Quizzies app:
 
 - CategoriesTreeModel:
   - inherited from [QAbstractItemModel](https://doc.qt.io/qt-6/qabstractitemmodel.html)
-  - used on the edit page for displaying the quiz' categories and questions and on the presentation screen for displaying the current category or question
-  - contains the current (selected) quiz
-  - contains slots for creating, updating and deleting categories and questions, navigating through them (getting the previous or next     element), and getting the desired element as a dictionary
-  - overrides methods `rowCount`, `index`, `parent`,
-    `data`, `insertRow`, `removeRow` and `setData`
+  - used on the edit page for displaying the quiz categories and questions and on the presentation screen for displaying the current category or question
+  - contains the current (selected) quiz, its categories, and questions in the tree structure
+  - contains slots for creating, updating, and deleting categories and questions, navigating through them (getting the previous or next element), and getting the desired element as a dictionary
+  - overrides methods `rowCount`, `index`, `parent`, `data`, `insertRow`, `removeRow` and `setData`
 
 ## Future steps
 
+This application is conceived as a starting point for a potentially more complex project, which could be upgraded in several ways.
 
+First, different types of questions could be introduced, such as questions with images or multiple-choice questions. The database schema already supports those changes, it would only be a matter of upgrading the UI. 
+
+Finally, it could be very interesting to create a mobile or web client-side to Quizzies, where the participants could answer the questions presented in this app, and the scoreboard would be automatically generated based on the number of correct answers and points.
