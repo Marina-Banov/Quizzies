@@ -22,15 +22,6 @@ class CategoriesTreeModel(QAbstractItemModel):
         self.roleNames = lambda: role_names
         self.columnCount = lambda i: 1
 
-    @Slot(QModelIndex)
-    def delete(self, i):
-        data = self.itemData(i)
-        if self.execute_query(f"DELETE FROM {data['type']} WHERE id="
-                              f"{data['id']}"):
-            self.removeRow(i.row(), self.parent(i))
-        else:
-            print("Failed to execute query")
-
     def set_quiz(self, quiz):
         self.quiz = quiz
 
@@ -44,6 +35,55 @@ class CategoriesTreeModel(QAbstractItemModel):
             return 0
         else:
             return len(self.quiz.categories)
+
+    def index(self, row, column, parent=QModelIndex()):
+        if column != 0:
+            return QModelIndex()
+        if not self.hasIndex(row, column, parent):
+            return QModelIndex()
+        if parent.isValid():
+            item = parent.internalPointer()
+            # if isinstance(item, Quiz):
+            #     return self.createIndex(row, column, item.categories[row])
+            if isinstance(item, Category):
+                return self.createIndex(row, column, item.questions[row])
+            return QModelIndex()
+        else:
+            return self.createIndex(row, column, self.quiz.categories[row])
+
+    def parent(self, index=QModelIndex()):
+        if not index.isValid():
+            return QModelIndex()
+        item = index.internalPointer()
+        if isinstance(item, Category):
+            # root object (quiz) is not displayed, categories are at the root
+            # this also means that their parent in this model is None !
+            return QModelIndex()
+        elif isinstance(item, Question):
+            row = -1
+            parent_item = None
+            for i, category in enumerate(self.quiz.categories):
+                if item in category.questions:
+                    row = i
+                    parent_item = category
+                    break
+            if row >= 0:
+                return self.createIndex(row, 0, parent_item)
+        return QModelIndex()
+
+    def data(self, index, role=Qt.DisplayRole):
+        if not index.isValid():
+            return
+
+        item = index.internalPointer()
+
+        if role == Qt.DisplayRole:
+            return item.name
+        if role == roles.ModelIndexRole:
+            return index
+        prop = roles.MAPPINGS.get(role)
+        if prop is not None:
+            return getattr(item, prop)
 
     def insertRow(self, row, parent=QModelIndex(), *args):
         if len(args) == 0:
@@ -64,6 +104,20 @@ class CategoriesTreeModel(QAbstractItemModel):
         else:
             del self.quiz.categories[row]
         self.endRemoveRows()
+
+    def setData(self, index, *args, **kwargs):
+        if not index.isValid():
+            return False
+
+        value, role = args
+        item = index.internalPointer()
+        prop = roles.MAPPINGS.get(role)
+        if prop is not None and getattr(item, prop) is not None:
+            setattr(item, prop, value)
+            self.dataChanged.emit(index, index)
+            return True
+
+        return False
 
     @Slot(QModelIndex, result='QModelIndex')
     def prev(self, i):
@@ -118,68 +172,29 @@ class CategoriesTreeModel(QAbstractItemModel):
                     data[prop] = attr
         return data
 
-    def index(self, row, column, parent=QModelIndex()):
-        if column != 0:
-            return QModelIndex()
-        if not self.hasIndex(row, column, parent):
-            return QModelIndex()
-        if parent.isValid():
-            item = parent.internalPointer()
-            # if isinstance(item, Quiz):
-            #     return self.createIndex(row, column, item.categories[row])
-            if isinstance(item, Category):
-                return self.createIndex(row, column, item.questions[row])
-            return QModelIndex()
+    @Slot(str)
+    def createCategory(self, name):
+        if self.execute_query(f"INSERT INTO category(name, quiz_id) "
+                              f"VALUES ('{name}', {self.quiz.id})"):
+            self.insertRow(len(self.quiz.categories), QModelIndex(),
+                           Category(self.last_insert_id(), name))
         else:
-            return self.createIndex(row, column, self.quiz.categories[row])
+            print("Failed to execute query")
 
-    def parent(self, index=QModelIndex()):
-        if not index.isValid():
-            return QModelIndex()
-        item = index.internalPointer()
-        if isinstance(item, Category):
-            # root object (quiz) is not displayed, categories are at the root
-            # this also means that their parent in this model is None !
-            return QModelIndex()
-        elif isinstance(item, Question):
-            row = -1
-            parent_item = None
-            for i, category in enumerate(self.quiz.categories):
-                if item in category.questions:
-                    row = i
-                    parent_item = category
-                    break
-            if row >= 0:
-                return self.createIndex(row, 0, parent_item)
+    @Slot(str, QModelIndex, result='QModelIndex')
+    def createQuestion(self, name, category):
+        row = self.rowCount(category)
+        if self.execute_query(f"INSERT INTO question(name, qtype) "
+                              f"VALUES ('{name}', 1)"):
+            q_id = self.last_insert_id()
+            c_id = self.data(category, roles.IdRole)
+            if self.execute_query(f"INSERT INTO category_question( "
+                                  f"category_id, question_id) "
+                                  f"VALUES ({c_id}, {q_id})"):
+                self.insertRow(row, category, Question(q_id, name, 1))
+                return self.index(row, 0, category)
+        print("Failed to execute query")
         return QModelIndex()
-
-    def data(self, index, role=Qt.DisplayRole):
-        if not index.isValid():
-            return
-
-        item = index.internalPointer()
-
-        if role == Qt.DisplayRole:
-            return item.name
-        if role == roles.ModelIndexRole:
-            return index
-        prop = roles.MAPPINGS.get(role)
-        if prop is not None:
-            return getattr(item, prop)
-
-    def setData(self, index, *args, **kwargs):
-        if not index.isValid():
-            return False
-
-        value, role = args
-        item = index.internalPointer()
-        prop = roles.MAPPINGS.get(role)
-        if prop is not None and getattr(item, prop) is not None:
-            setattr(item, prop, value)
-            self.dataChanged.emit(index, index)
-            return True
-
-        return False
 
     @Slot(QModelIndex, str)
     def updateCategory(self, index, name):
@@ -187,7 +202,8 @@ class CategoriesTreeModel(QAbstractItemModel):
             return
 
         _id = self.data(index, roles.IdRole)
-        if self.execute_query(f"UPDATE category SET name='{name}' WHERE id={_id}"):
+        if self.execute_query(
+                f"UPDATE category SET name='{name}' WHERE id={_id}"):
             self.setData(index, name, roles.NameRole)
         else:
             print("Failed to execute query")
@@ -232,29 +248,14 @@ class CategoriesTreeModel(QAbstractItemModel):
         else:
             print("Failed to execute query")
 
-    @Slot(str)
-    def createCategory(self, name):
-        if self.execute_query(f"INSERT INTO category(name, quiz_id) "
-                              f"VALUES ('{name}', {self.quiz.id})"):
-            self.insertRow(len(self.quiz.categories), QModelIndex(),
-                           Category(self.last_insert_id(), name))
+    @Slot(QModelIndex)
+    def delete(self, i):
+        data = self.itemData(i)
+        if self.execute_query(f"DELETE FROM {data['type']} WHERE id="
+                              f"{data['id']}"):
+            self.removeRow(i.row(), self.parent(i))
         else:
             print("Failed to execute query")
-
-    @Slot(str, QModelIndex, result='QModelIndex')
-    def createQuestion(self, name, category):
-        row = self.rowCount(category)
-        if self.execute_query(f"INSERT INTO question(name, qtype) "
-                              f"VALUES ('{name}', 1)"):
-            q_id = self.last_insert_id()
-            c_id = self.data(category, roles.IdRole)
-            if self.execute_query(f"INSERT INTO category_question( "
-                                  f"category_id, question_id) "
-                                  f"VALUES ({c_id}, {q_id})"):
-                self.insertRow(row, category, Question(q_id, name, 1))
-                return self.index(row, 0, category)
-        print("Failed to execute query")
-        return QModelIndex()
 
 
 class QuizListModel(QAbstractListModel):

@@ -102,9 +102,9 @@ Page {
                     anchors.top: categoriesTreeView.bottom
                     anchors.right: parent.right
                     anchors.margins: 10
-                    implicitWidth: 130
+                    implicitWidth: 140
                     implicitHeight: 25
-                    font.pointSize: 10
+                    font.pointSize: 9
                     text: "NOVA KATEGORIJA"
                     onClicked: {
                         var d = dialogCreate.createObject(editPage);
@@ -126,9 +126,9 @@ Page {
                 QuizziesEditForm { id: form }
                 RoundGradientButton {
                     Layout.alignment: Qt.AlignRight
-                    implicitWidth: 80
+                    implicitWidth: 70
                     implicitHeight: 25
-                    font.pointSize: 10
+                    font.pointSize: 9
                     text: "SPREMI"
                     onClicked: {
                         var i = selection.selectedIndexes[0];

@@ -1,8 +1,8 @@
-import os
 import re
 from dataclasses import dataclass, field
+from pathlib import Path
 
-from PySide6.QtCore import QDir, QFile, QIODevice, QTextStream
+from PySide6.QtCore import QFile, QIODevice, QTextStream
 from PySide6.QtSql import QSqlDatabase, QSqlQuery
 
 
@@ -64,14 +64,8 @@ class Database:
             if not self.database.isValid():
                 print("Cannot add database")
 
-        abs_path = os.path.realpath(__file__)
-        write_dir = QDir("\\".join(abs_path.split('\\')[:-1]))
-        if not write_dir.mkpath("."):
-            print("Failed to create writable directory")
-
-        # Ensure that we have a writable location on all devices.
-        abs_path = write_dir.absolutePath()
-        filename = f"{abs_path}/db.sqlite3"
+        db_file = Path(__file__).parent / "db.sqlite3"
+        filename = str(db_file.resolve())
 
         # When using the SQLite driver, open() will create the SQLite
         # database if it doesn't exist.

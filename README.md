@@ -18,6 +18,7 @@ python main.py
 ```
 
 ## User guide
+
 On the home screen, you can choose to create your quiz or select one of the existing quizzes. All the quizzes you create and the few default ones are displayed in a list, and you can either view them, edit them or delete them.
 
 ![Home page](/images/HomePage.png "Home page")
@@ -45,7 +46,34 @@ In the top left corner, there is a *Back* button to get you to the home screen.
 
 ## The code
 
+### The database
 
+Starting the app will initialize the connection to an SQLite database by opening the `src\db.sqlite3` file. If the file doesn't exist, it will be created, and all the necessary SQL tables will be added, along with two example quizzes. The changes you make to your quizzes update the database, they are persistent and will be visible if you close and reopen the app.
+
+The app uses the [Qt SQL module](https://doc.qt.io/qt-6/qtsql-index.html), specifically the SQL API Layer to interact with the database.
+
+Database schema:
+![Database schema](images/db2.png "Database schema")
+
+### The models (Model/View Architecture)
+
+Two models are implemented in the Quizzies app:
+
+- QuizListModel:
+  - inherited from [QAbstractListModel](https://doc.qt.io/qt-6/qabstractlistmodel.html)
+  - used on the home screen
+  - contains the list of all the quizzes
+  - contains slots for creating, updating, deleting quizzes and fetching details (categories and questions)
+  - overrides methods `data`, `insertRow` and `removeRow`
+
+
+- CategoriesTreeModel:
+  - inherited from [QAbstractItemModel](https://doc.qt.io/qt-6/qabstractitemmodel.html)
+  - used on the edit page for displaying the quiz' categories and questions and on the presentation screen for displaying the current category or question
+  - contains the current (selected) quiz
+  - contains slots for creating, updating and deleting categories and questions, navigating through them (getting the previous or next     element), and getting the desired element as a dictionary
+  - overrides methods `rowCount`, `index`, `parent`,
+    `data`, `insertRow`, `removeRow` and `setData`
 
 ## Future steps
 
