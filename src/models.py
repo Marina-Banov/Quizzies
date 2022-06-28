@@ -351,5 +351,18 @@ class QuizListModel(QAbstractListModel):
 
     @Slot(QUrl, result="QUrl")
     def load(self, url):
-        print(url.toLocalFile())
+        class_mapping = {
+            frozenset(('_id', 'name', 'categories')): Quiz,
+            frozenset(('_id', 'name', 'questions')): Category,
+            frozenset(('image', 'answer', 'qtype', '_id', 'question',
+                       'points', 'choices', 'name')): Question
+        }
+        with open(url.toLocalFile(), "r", encoding="utf8") as infile:
+            self.beginResetModel()
+            self._quizzes = json.loads(
+                infile.read(),
+                object_hook=lambda d: class_mapping[frozenset(d.keys())](**d)
+            )
+            # TODO apply database changes
+            self.endResetModel()
         return url.url(options=QUrl.FormattingOptions(QUrl.RemoveFilename))
