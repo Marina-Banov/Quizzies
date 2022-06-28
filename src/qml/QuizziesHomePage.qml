@@ -73,21 +73,29 @@ Page {
                 }
             }
 
-            Row {
-                anchors.leftMargin: 5
+            Text {
                 width: 500
-                spacing: 25
-
-                RoundGradientButton {
-                    text: "SPREMI BAZU"
-                    onClicked: { saveDialog.open() }
-                }
-
-                RoundGradientButton {
-                    text: "UČITAJ BAZU"
-                    onClicked: {}
+                anchors.leftMargin: 5
+                wrapMode: Text.WordWrap
+                text: "Ovdje možete <a href='load'>učitati</a> ili <a href='save'>spremiti</a> bazu pitanja u JSON formatu."
+                font.family: lato.name
+                font.pointSize: 11
+                color: Style.red
+                onLinkActivated: (link) => {
+                    if (link == "save") {
+                        saveDialog.open()
+                    } else {
+                        loadDialog.open()
+                    }
                 }
             }
+        }
+
+        FileDialog {
+            id: loadDialog
+            nameFilters: ["JSON (*.json)"]
+            folder: { StandardPaths.writableLocation("") }
+            onAccepted: { folder = quizzesModel.load(currentFile) }
         }
 
         FileDialog {

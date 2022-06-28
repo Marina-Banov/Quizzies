@@ -348,3 +348,8 @@ class QuizListModel(QAbstractListModel):
                       ensure_ascii=False,
                       indent=4)
         return url.url(options=QUrl.FormattingOptions(QUrl.RemoveFilename))
+
+    @Slot(QUrl, result="QUrl")
+    def load(self, url):
+        print(url.toLocalFile())
+        return url.url(options=QUrl.FormattingOptions(QUrl.RemoveFilename))
