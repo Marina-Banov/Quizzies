@@ -1,3 +1,4 @@
+import json
 import re
 
 from PySide6.QtCore import (
@@ -5,6 +6,7 @@ from PySide6.QtCore import (
     QAbstractItemModel,
     QModelIndex,
     Qt,
+    QUrl,
     Slot,
 )
 from PySide6.QtQml import QJSValue
@@ -119,7 +121,7 @@ class CategoriesTreeModel(QAbstractItemModel):
 
         return False
 
-    @Slot(QModelIndex, result='QModelIndex')
+    @Slot(QModelIndex, result="QModelIndex")
     def prev(self, i):
         if not i.isValid():
             return QModelIndex()
@@ -138,7 +140,7 @@ class CategoriesTreeModel(QAbstractItemModel):
             res = self.index(i.row() - 1, 0, p)
         return res if res.isValid() else p
 
-    @Slot(QModelIndex, result='QModelIndex')
+    @Slot(QModelIndex, result="QModelIndex")
     def next(self, i):
         if not i.isValid():
             return QModelIndex()
@@ -157,7 +159,7 @@ class CategoriesTreeModel(QAbstractItemModel):
             res = self.index(p.row() + 1, 0)
         return res if res.isValid() else i
 
-    @Slot(QModelIndex, result='QVariant')
+    @Slot(QModelIndex, result="QVariant")
     def itemData(self, index):
         data = {}
         if not index.isValid():
@@ -181,7 +183,7 @@ class CategoriesTreeModel(QAbstractItemModel):
         else:
             print("Failed to execute query")
 
-    @Slot(str, QModelIndex, result='QModelIndex')
+    @Slot(str, QModelIndex, result="QModelIndex")
     def createQuestion(self, name, category):
         row = self.rowCount(category)
         if self.execute_query(f"INSERT INTO question(name, qtype) "
@@ -232,7 +234,7 @@ class CategoriesTreeModel(QAbstractItemModel):
 
         query = [f"\"{key}={prop}\"" for key, prop in change]
         pattern = re.compile(r'[\[\]\\]|(?<!\\)((\'\")|(\"\'))')
-        query = re.sub(pattern, '', str(query))
+        query = re.sub(pattern, "", str(query))
         _id = self.data(index, roles.IdRole)
         query = f"UPDATE question SET {query} WHERE id={_id}"
 
@@ -307,12 +309,13 @@ class QuizListModel(QAbstractListModel):
         item.categories = categories
         self.set_current_quiz(item)
 
-    @Slot(str, result='bool')
+    @Slot(str, result="bool")
     def create(self, name):
         if self.execute_query(f"INSERT INTO quiz(name) VALUES ('{name}')"):
             return self.insertRow(0, QModelIndex(),
                                   Quiz(self.last_insert_id(), name))
         print("Failed to execute query")
+        return False
 
     @Slot(QModelIndex, str)
     def update(self, index, name):
@@ -333,3 +336,15 @@ class QuizListModel(QAbstractListModel):
             self.removeRow(index)
         else:
             print("Failed to execute query")
+
+    @Slot(QUrl, result="QUrl")
+    def save(self, url):
+        for q in self._quizzes:
+            q.categories = self.get_quiz_details(q.id)
+        with open(url.toLocalFile(), "w", encoding="utf8") as outfile:
+            json.dump(self._quizzes,
+                      outfile,
+                      default=lambda o: o.__dict__,
+                      ensure_ascii=False,
+                      indent=4)
+        return url.url(options=QUrl.FormattingOptions(QUrl.RemoveFilename))

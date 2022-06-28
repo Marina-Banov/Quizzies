@@ -88,13 +88,13 @@ class Database:
 
         f = QFile(":/init.sql")
         f.open(QIODevice.ReadOnly | QFile.Text)
-        f_text = QTextStream(f).readAll().split(';')
+        f_text = QTextStream(f).readAll().split(";")
         f.close()
         # from the docs (https://doc.qt.io/qt-6/qsqlquery.html#exec):
         # For SQLite, the query string can contain only one statement at a time
         for line in f_text:
             if len(line) > 0:
-                line = re.sub('\\s+', ' ', line)
+                line = re.sub("\\s+", " ", line)
                 self.query.exec_(line)
 
 

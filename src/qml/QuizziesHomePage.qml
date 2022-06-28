@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Dialogs
+import Qt.labs.platform
 
 
 Page {
@@ -17,60 +19,84 @@ Page {
             source: "qrc:///assets/bg.png"
         }
 
-        Text {
-            id: textTitle
-            width: 400
-            x: 50; y: 90
-            wrapMode: Text.WordWrap
-            text: "Dobrodošli u Quizzies!"
-            font.family: merriweather.name
-            font.pointSize: 38
-            color: Style.redDark
-        }
-
-        Text {
-            id: textDescription
-            width: 500
-            anchors.topMargin: 25
-            anchors.leftMargin: 5
-            anchors.top: textTitle.bottom
-            anchors.left: textTitle.left
-            text: "Jeste li spremni za dobar provod s prijateljima?\nPokažite tko među vama zna odgovore na najteža pitanja i zabavite se!"
-            font.family: lato.name
-            wrapMode: Text.WordWrap
-            font.pointSize: 14
-            color: Style.red
-        }
-
-        Row {
-            anchors.topMargin: 25
-            anchors.top: textDescription.bottom
-            anchors.left: textDescription.left
-            width: textDescription.width
+        Column {
+            anchors.fill: root
+            anchors.topMargin: 90
+            anchors.leftMargin: 50
             spacing: 25
 
-            RoundGradientButton {
-                text: "NOVI KVIZ"
-                onClicked: {
-                    var d = dialogCreate.createObject(homePage);
-                    d.title = "Novi kviz";
-                    d.label.text = "Ime kviza";
-                    d.accepted.connect(() => {
-                        if (quizzesModel.create(d.nameField.text)) {
-                            quizzesModel.details(0);
-                            internals.currentQuizIndex = quizzesModel.index(0,0);
-                            stack.push("QuizziesEditPage.qml");
-                        }
-                    });
-                    d.visible = 1;
+            Text {
+                width: 400
+                wrapMode: Text.WordWrap
+                text: "Dobrodošli u Quizzies!"
+                font.family: merriweather.name
+                font.pointSize: 38
+                color: Style.redDark
+            }
+
+            Text {
+                width: 500
+                anchors.leftMargin: 5
+                wrapMode: Text.WordWrap
+                text: "Jeste li spremni za dobar provod s prijateljima?\nPokažite tko među vama zna odgovore na najteža pitanja i zabavite se!"
+                font.family: lato.name
+                font.pointSize: 14
+                color: Style.red
+            }
+
+            Row {
+                anchors.leftMargin: 5
+                width: 500
+                spacing: 25
+
+                RoundGradientButton {
+                    text: "NOVI KVIZ"
+                    onClicked: {
+                        var d = dialogCreate.createObject(homePage);
+                        d.title = "Novi kviz";
+                        d.label.text = "Ime kviza";
+                        d.accepted.connect(() => {
+                            if (quizzesModel.create(d.nameField.text)) {
+                                quizzesModel.details(0);
+                                internals.currentQuizIndex = quizzesModel.index(0,0);
+                                stack.push("QuizziesEditPage.qml");
+                            }
+                        });
+                        d.visible = 1;
+                    }
+                }
+
+                RoundGradientButton {
+                    visible: root.width < 828
+                    text: "ODABERI KVIZ"
+                    onClicked: { animationMenu.running = true }
                 }
             }
 
-            RoundGradientButton {
-                visible: root.width < 828
-                text: "ODABERI KVIZ"
-                onClicked: { animationMenu.running = true }
+            Row {
+                anchors.leftMargin: 5
+                width: 500
+                spacing: 25
+
+                RoundGradientButton {
+                    text: "SPREMI BAZU"
+                    onClicked: { saveDialog.open() }
+                }
+
+                RoundGradientButton {
+                    text: "UČITAJ BAZU"
+                    onClicked: {}
+                }
             }
+        }
+
+        FileDialog {
+            id: saveDialog
+            currentFile: "Quizzies_db.json"
+            nameFilters: ["JSON (*.json)"]
+            folder: { StandardPaths.writableLocation("") }
+            fileMode: FileDialog.SaveFile
+            onAccepted: { folder = quizzesModel.save(currentFile) }
         }
 
         Rectangle {

@@ -82,7 +82,7 @@ Page {
             text: {
                 if (!model) return ""
                 if (model.type == "category") return "Kategorija " + model.name
-                selection.selectedIndexes[0].row+1 + '. ' + model.question
+                selection.selectedIndexes[0].row+1 + ". " + model.question
             }
             font.family: {
                 if (model && model.type == "category") return merriweather.name
