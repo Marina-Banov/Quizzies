@@ -45,7 +45,7 @@ class Database:
             while subquery.next():
                 questions.append(
                     Question(
-                        subquery.value("id"),
+                        subquery.value("question_id"),
                         subquery.value("name"),
                         subquery.value("qtype"),
                         subquery.value("question"),

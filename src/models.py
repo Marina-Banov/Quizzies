@@ -1,5 +1,4 @@
 import json
-import re
 
 from PySide6.QtCore import (
     QAbstractListModel,
@@ -216,6 +215,7 @@ class CategoriesTreeModel(QAbstractItemModel):
             return
 
         change = []
+        query = ""
         for key, value in self.itemData(index).items():
             if key == "points":
                 prop = data.property(key).toUInt()
@@ -226,25 +226,24 @@ class CategoriesTreeModel(QAbstractItemModel):
                 if type(prop) == str:
                     # xss for string with apostrophes prevention
                     prop = prop.replace("'", "''")
-                    prop = f"'{prop}'"
+                    query += f"{key}='{prop}', "
+                else:
+                    query += f"{key}={prop}, "
                 change.append((key, prop))
 
         if len(change) == 0:
             return
 
-        query = [f"\"{key}={prop}\"" for key, prop in change]
-        pattern = re.compile(r'[\[\]\\]|(?<!\\)((\'\")|(\"\'))')
-        query = re.sub(pattern, "", str(query))
         _id = self.data(index, roles.IdRole)
-        query = f"UPDATE question SET {query} WHERE id={_id}"
+        query = f"UPDATE question SET {query[:-2]} WHERE id={_id}"
 
         if self.execute_query(query):
             roles_keys = list(roles.MAPPINGS.keys())
             roles_values = list(roles.MAPPINGS.values())
-            for key, p in change:
+            for key, prop in change:
                 self.setData(
                     index,
-                    p if type(p) != str else p[1:-1].replace("''", "'"),
+                    prop if type(prop) != str else prop.replace("''", "'"),
                     roles_keys[roles_values.index(key)]
                 )
         else:
@@ -351,9 +350,7 @@ class QuizListModel(QAbstractListModel):
 
     @Slot(QUrl, result="QUrl")
     def load(self, url):
-        if not self.execute_query(f"DELETE FROM quiz") or \
-               not self.execute_query(f"DELETE FROM question"):
-            return url.url(options=QUrl.FormattingOptions(QUrl.RemoveFilename))
+        res = url.url(options=QUrl.FormattingOptions(QUrl.RemoveFilename))
 
         class_mapping = {
             frozenset(('_id', 'name', 'categories')): Quiz,
@@ -362,26 +359,39 @@ class QuizListModel(QAbstractListModel):
                        'points', 'choices', 'name')): Question
         }
         with open(url.toLocalFile(), "r", encoding="utf8") as infile:
-            self.beginResetModel()
-            self._quizzes = json.loads(
+            new_quizzes = json.loads(
                 infile.read(),
                 object_hook=lambda d: class_mapping[frozenset(d.keys())](**d)
             )
-            for quiz in self._quizzes:
-                self.execute_query(f"INSERT INTO quiz VALUES "
-                                   f"({quiz.id}, '{quiz.name}')")
-                for c in quiz.categories:
-                    self.execute_query(f"INSERT INTO category VALUES "
-                                       f"({c.id}, '{c.name}', {quiz.id})")
-                    for q in c.questions:
-                        self.execute_query(
-                            f"INSERT INTO question "
-                            f"VALUES ({q.id}, '{q.name}', '{q.question}', "
-                            f"'{q.answer}', {q.qtype}, {q.points}, '{q.image}')"
-                        )
-                        self.execute_query(
-                            f"INSERT INTO category_question(category_id, question_id) "
-                            f"VALUES ({c.id}, {q.id})"
-                        )
-            self.endResetModel()
-        return url.url(options=QUrl.FormattingOptions(QUrl.RemoveFilename))
+
+        if not self.execute_query(f"DELETE FROM quiz") or \
+           not self.execute_query(f"DELETE FROM question"):
+            return res
+
+        self.beginResetModel()
+        self._quizzes = []
+        self.endResetModel()
+
+        for quiz in new_quizzes:
+            if not self.execute_query(f"INSERT INTO quiz VALUES "
+                                      f"({quiz.id}, '{quiz.name}')"):
+                return res
+            for c in quiz.categories:
+                if not self.execute_query(f"INSERT INTO category VALUES "
+                                          f"({c.id}, '{c.name}', {quiz.id})"):
+                    return res
+                for q in c.questions:
+                    if not self.execute_query(
+                        f"INSERT INTO question "
+                        f"VALUES ({q.id}, '{q.name}', '{q.question}', "
+                        f"'{q.answer}', {q.qtype}, {q.points}, '{q.image}')"
+                    ) or not self.execute_query(
+                        f"INSERT INTO category_question(category_id, question_id) "
+                        f"VALUES ({c.id}, {q.id})"
+                    ):
+                        return res
+
+        self.beginResetModel()
+        self._quizzes = new_quizzes
+        self.endResetModel()
+        return res
