@@ -351,6 +351,10 @@ class QuizListModel(QAbstractListModel):
 
     @Slot(QUrl, result="QUrl")
     def load(self, url):
+        if not self.execute_query(f"DELETE FROM quiz") or \
+               not self.execute_query(f"DELETE FROM question"):
+            return url.url(options=QUrl.FormattingOptions(QUrl.RemoveFilename))
+
         class_mapping = {
             frozenset(('_id', 'name', 'categories')): Quiz,
             frozenset(('_id', 'name', 'questions')): Category,
@@ -363,6 +367,21 @@ class QuizListModel(QAbstractListModel):
                 infile.read(),
                 object_hook=lambda d: class_mapping[frozenset(d.keys())](**d)
             )
-            # TODO apply database changes
+            for quiz in self._quizzes:
+                self.execute_query(f"INSERT INTO quiz VALUES "
+                                   f"({quiz.id}, '{quiz.name}')")
+                for c in quiz.categories:
+                    self.execute_query(f"INSERT INTO category VALUES "
+                                       f"({c.id}, '{c.name}', {quiz.id})")
+                    for q in c.questions:
+                        self.execute_query(
+                            f"INSERT INTO question "
+                            f"VALUES ({q.id}, '{q.name}', '{q.question}', "
+                            f"'{q.answer}', {q.qtype}, {q.points}, '{q.image}')"
+                        )
+                        self.execute_query(
+                            f"INSERT INTO category_question(category_id, question_id) "
+                            f"VALUES ({c.id}, {q.id})"
+                        )
             self.endResetModel()
         return url.url(options=QUrl.FormattingOptions(QUrl.RemoveFilename))

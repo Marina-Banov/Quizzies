@@ -1,6 +1,6 @@
 -- all comments should end with a semicolon;
 CREATE TABLE IF NOT EXISTS quiz (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     name TEXT NOT NULL
 );
 
@@ -8,7 +8,7 @@ INSERT INTO quiz(name) VALUES ('Mix kviz 1');
 INSERT INTO quiz(name) VALUES ('Mix kviz 2');
 
 CREATE TABLE IF NOT EXISTS category (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     quiz_id INTEGER NOT NULL,
     FOREIGN KEY (quiz_id) REFERENCES quiz (id) ON DELETE CASCADE
@@ -25,7 +25,7 @@ INSERT INTO category(name, quiz_id) VALUES ('Videoigre', 2);
 -- consider adding those list checkboxes to enable
 -- deleting multiple questions and/or categories at once;
 CREATE TABLE IF NOT EXISTS question (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
     question TEXT,
     answer TEXT,
@@ -68,14 +68,14 @@ INSERT INTO question(question, name, answer, qtype, points) VALUES (
 );
 
 CREATE TABLE IF NOT EXISTS choice (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     choice TEXT NOT NULL,
     question_id INTEGER NOT NULL,
     FOREIGN KEY (question_id) REFERENCES question (id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS category_question (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY,
     category_id INTEGER NOT NULL,
     question_id INTEGER NOT NULL,
     FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE CASCADE,
