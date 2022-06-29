@@ -12,7 +12,7 @@ from PySide6.QtCore import (
 from PySide6.QtQml import QJSValue
 
 from data import Question, Category, Quiz
-import roles
+import question_roles as roles
 
 
 class CategoriesTreeModel(QAbstractItemModel):

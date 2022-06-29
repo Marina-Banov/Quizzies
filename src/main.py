@@ -8,7 +8,7 @@ from PySide6.QtGui import QGuiApplication, QIcon
 import qrc  # static resources
 from database import Database
 from models import QuizListModel, CategoriesTreeModel
-import roles
+import question_roles as roles
 
 
 def main():
