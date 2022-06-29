@@ -1,10 +1,12 @@
 {
     "files": [
+        "README.md",
         "src/res.qrc",
         "src/data.py",
+        "src/database.py",
         "src/main.py",
         "src/models.py",
-        "src/roles.py",
+        "src/question_roles.py",
         "src/qml/main.qml",
         "src/qml/EditableText.qml",
         "src/qml/IconButton.qml",

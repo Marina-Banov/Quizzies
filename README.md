@@ -21,6 +21,8 @@ python main.py
 
 On the home screen, you can choose to create your quiz or select one of the existing quizzes. All the quizzes you create and the few default ones are displayed in a list, and you can either view them, edit them or delete them.
 
+You can also import or export the database in JSON format.
+
 ![Home page](/images/HomePage.png "Home page")
 
 Pressing the *Play* button will open the selected quiz in Presentation mode. This is a tool that you can use when your group of friends gathers around (live or online) to answer all the questions you, the trivia king, collected and are now presenting to them. All the categories and questions will be previewed, as you press the *Previous* and *Next* buttons at the bottom of the screen.
@@ -35,8 +37,7 @@ Click on the category to expand it.
 
 Click on the question to view the details section on the right side of the screen. You can edit the question, its short description, answer, or the number of points, just remember to save your changes.
 
-Right-click on the category to change its name and press *Enter* to save 
-the changes.
+Right-click on the category to change its name and press *Enter* to save the changes.
 
 In the top right corner, you can edit the quiz name using right-click and pressing *Enter* to save the changes.
 
@@ -64,7 +65,7 @@ Two models are implemented in the Quizzies app:
   - inherited from [QAbstractListModel](https://doc.qt.io/qt-6/qabstractlistmodel.html)
   - used on the home screen
   - contains the list of all the quizzes
-  - contains slots for creating, updating, deleting quizzes and fetching details (categories and questions)
+  - contains slots for creating, updating, and deleting quizzes, fetching details (categories and questions), and saving and loading the database in JSON format
   - overrides methods `data`, `insertRow` and `removeRow`
 
 
@@ -80,5 +81,7 @@ Two models are implemented in the Quizzies app:
 This application is conceived as a starting point for a potentially more complex project, which could be upgraded in several ways.
 
 First, different types of questions could be introduced, such as questions with images or multiple-choice questions. The database schema already supports those changes, it would only be a matter of upgrading the UI. 
+
+Currently, the database schema supports a many-to-many relationship between categories and questions, which means that a single question could be a part of multiple categories or quizzes without making any changes to the database or the core logic. This, however, has not yet been implemented in the UI. It could be achieved by creating a new QAbstractListModel which contains all the questions in the database, displaying them in the createDialog (file `src/qml/QuizziesTreeViewDelegate.qml`, line 94), possibly adding a filter for easier navigation, and making adjustments to the `CategoriesTreeModel::createQuestion` slot.
 
 Finally, it could be very interesting to create a mobile or web client-side to Quizzies, where the participants could answer the questions presented in this app, and the scoreboard would be automatically generated based on the number of correct answers and points.
